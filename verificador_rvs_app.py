@@ -1,4 +1,3 @@
-
 import streamlit as st
 import pdfplumber
 import re
@@ -17,8 +16,18 @@ st.markdown("""
 
     html, body, [class*="css"]  {
         font-family: 'Roboto', sans-serif;
-        background-color: #ffffff;
-        color: #222222;
+        background-color: #23272B !important;
+        color: #f1f1f1 !important;
+    }
+
+    /* Checkbox Check verde */
+    section[data-testid="stCheckbox"] svg {
+        stroke: #27d154 !important;
+        filter: drop-shadow(0 0 3px #27d154cc);
+    }
+    section[data-testid="stCheckbox"]:hover svg {
+        stroke: #39ef74 !important;
+        filter: drop-shadow(0 0 6px #39ef74cc);
     }
 
     .stButton>button {
@@ -26,13 +35,59 @@ st.markdown("""
         color: white;
         font-weight: bold;
         border: none;
-        padding: 0.5em 1em;
-        border-radius: 8px;
+        padding: 0.6em 1.15em;
+        border-radius: 9px;
+        font-size: 19px;
         transition: 0.3s;
+        box-shadow: 0 2px 12px #0002;
     }
 
     .stButton>button:hover {
         background-color: #c49d2e;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Roboto', sans-serif;
+        color: #f1f1f1 !important;
+        font-weight: 700;
+        margin-bottom: 0.4em;
+    }
+    h1 { font-size: 36px; }
+    h2 { font-size: 27px; }
+    h3 { font-size: 21px; }
+    .stSubheader, .stMarkdown p, .stMarkdown strong, .stMarkdown span {
+        font-size: 18px !important;
+        color: #e0e0e0 !important;
+        font-family: 'Roboto', sans-serif;
+    }
+    label, .stTextInput label, .stNumberInput label, .stFileUploader label {
+        font-size: 17px !important;
+        color: #d2d2d2 !important;
+    }
+    /* Painel dos resultados ajustado */
+    .result-block {
+        background: #343a40;
+        padding: 12px 13px;
+        border-left: 6px solid #d4af37;
+        border-radius: 7px;
+        color: #fffbea;
+        margin-bottom: 10px;
+        font-size: 17px;
+    }
+    .result-block.ok {
+        border-left-color: #27d154;
+        background: #273c2e;
+        color: #e6f4ea;
+    }
+    .result-block.none {
+        border-left-color: #468cfb;
+        background: #222f3a;
+        color: #e8f0fe;
+    }
+    .result-block.grey {
+        border-left-color: #aaaaaa;
+        background: #393939;
+        color: #f3f3f3;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -40,8 +95,8 @@ st.markdown("""
 st.image("https://raw.githubusercontent.com/rvspericias/verificador-rvs-app/refs/heads/main/logo-min-flat.png", width=100)
 
 st.markdown("""
-<h1 style='font-family: Roboto; font-size: 42px; color: #222; margin-bottom: 0;'>Verificador <span style='color:#d4af37;'>RVS</span></h1>
-<p style='font-family: Roboto; font-size: 18px; color: #555; margin-top: 0;'>Automatize a conferência de jornadas com base nos arquivos PDF de contagem</p>
+<h1 style='font-family: Roboto'>Verificador <span style='color:#d4af37;'>RVS</span></h1>
+<p style='font-family: Roboto; font-size: 20px; color: #cccccc; margin-top: 0;'>Automatize a conferência de jornadas com base nos arquivos PDF de contagem</p>
 """, unsafe_allow_html=True)
 
 # Dicionário de meses em português
@@ -56,8 +111,8 @@ verificar_identicos = st.checkbox("Verificar registros de entrada/saída idênti
 
 with st.container():
     st.markdown("""
-    <h4 style='font-family: Roboto; color: #444;'>📎 Upload do Arquivo</h4>
-    <p style='color: #777;'>Selecione o arquivo PDF da contagem de horas para verificar os registros.</p>
+    <h4 style='font-family: Roboto; color: #ededed; font-size:19px;'>📎 Upload do Arquivo</h4>
+    <p style='color: #bcbcbc; font-size:17px;'>Selecione o arquivo PDF da contagem de horas para verificar os registros.</p>
     """, unsafe_allow_html=True)
     uploaded_file = st.file_uploader("Envie o PDF da contagem de horas", type=["pdf"])
 
@@ -106,30 +161,22 @@ if uploaded_file:
     if dias_excedidos:
         st.write("### Dias com mais horas que o limite:")
         for d in dias_excedidos:
-            st.markdown(f"""
-            <div style='background:#fff8dc; padding:10px; border-left:5px solid #d4af37; margin-bottom:8px;'>
-                <strong>{d[0]}</strong> | {d[1]} | {d[2]} | Página {d[3]}
-            </div>
-            """, unsafe_allow_html=True)
+            st.markdown(
+                f"<div class='result-block'><strong>{d[0]}</strong> | {d[1]} | {d[2]} | Página {d[3]}</div>",
+                unsafe_allow_html=True)
     else:
-        st.markdown("""
-        <div style='background:#e6f4ea; padding:10px; border-left:5px solid #2e7d32; margin-bottom:8px;'>
-            <strong>Nenhum dia excedeu o limite de horas.</strong>
-        </div>
-        """, unsafe_allow_html=True)
+        st.markdown(
+            "<div class='result-block ok'><strong>Nenhum dia excedeu o limite de horas.</strong></div>",
+            unsafe_allow_html=True)
 
     if verificar_identicos:
         if registros_iguais:
             st.write("### Registros com entrada/saída idênticos:")
             for r in registros_iguais:
-                st.markdown(f"""
-                <div style='background:#f8f9fa; padding:10px; border-left:5px solid #888; margin-bottom:8px;'>
-                    <strong>{r[0]}</strong> | {r[1]} | {r[2]} | Página {r[3]}
-                </div>
-                """, unsafe_allow_html=True)
+                st.markdown(
+                    f"<div class='result-block grey'><strong>{r[0]}</strong> | {r[1]} | {r[2]} | Página {r[3]}</div>",
+                    unsafe_allow_html=True)
         else:
-            st.markdown("""
-            <div style='background:#e8f0fe; padding:10px; border-left:5px solid #4285f4; margin-bottom:8px;'>
-                Nenhum registro idêntico encontrado.
-            </div>
-            """, unsafe_allow_html=True)
+            st.markdown(
+                "<div class='result-block none'>Nenhum registro idêntico encontrado.</div>",
+                unsafe_allow_html=True)
