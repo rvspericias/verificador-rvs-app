@@ -95,7 +95,7 @@ st.markdown("""
         font-weight: 900;
         font-size: 1.5rem !important;
         margin-top: 1em;
-        margin-bottom: 1em;
+        margin-bottom: 0,5em;
         letter-spacing: 0.01em;
         text-shadow: 0 1px 12px #00000022, 0 0px 14px #d4af373A;
         font-family: 'Roboto', sans-serif !important;
