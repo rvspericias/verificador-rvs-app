@@ -56,6 +56,14 @@ st.markdown("""
         margin-top: 1.2em;
         margin-bottom: 0.6em;
     }
+    /* Labels douradas dos widgets */
+    div[data-testid="stNumberInput"] > label,
+    div[data-testid="stFileUploader"] > label {
+        color: #d4af37 !important;
+        font-weight: bold !important;
+        font-size: 1.1rem !important;
+        text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
+    }
 </style>
 """, unsafe_allow_html=True)
 
