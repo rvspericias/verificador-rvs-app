@@ -94,12 +94,12 @@ st.markdown("""
         color: #d4af37 !important;
         font-weight: 900;
         font-size: 2.1rem !important;
-        margin-top: 1.5em;
-        margin-bottom: 1.1em;
+        margin-top: 1em;
+        margin-bottom: 1em;
         letter-spacing: 0.01em;
         text-shadow: 0 1px 12px #00000022, 0 0px 14px #d4af373A;
         font-family: 'Roboto', sans-serif !important;
-        line-height: 1.1;
+        line-height: 1;
         text-align: left;
     }
 </style>
