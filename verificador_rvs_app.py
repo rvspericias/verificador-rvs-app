@@ -179,7 +179,6 @@ if uploaded_file:
 # Use a classe personalizada para o título
 st.markdown('<div class="header-gold">Resultado da Verificação</div>', unsafe_allow_html=True)
 
-
     if dias_excedidos:
         st.write("### Dias com mais horas que o limite:")
         for d in dias_excedidos:
