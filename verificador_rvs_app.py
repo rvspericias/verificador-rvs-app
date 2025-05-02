@@ -119,8 +119,7 @@ MESES_PT = {
 limite = st.number_input("Limite máximo de horas por dia (ex: 17.00)", min_value=0.0, max_value=24.0, value=17.00, step=0.25, format="%0.2f")
 verificar_identicos = st.checkbox("Verificar registros de entrada/saída idênticos", value=True)
 
-with st.container():
-    st.markdown("<h4>📎 Envie o PDF da contagem de horas", type=["pdf"])
+uploaded_file = st.file_uploader("Envie o PDF da contagem", type=["pdf"])
 
 if uploaded_file:
     dias_excedidos = []
