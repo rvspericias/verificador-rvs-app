@@ -1,3 +1,4 @@
+
 import streamlit as st
 import pdfplumber
 import re
@@ -42,13 +43,9 @@ st.markdown("""
 <p style='font-family: Roboto; font-size: 18px; color: #555; margin-top: 0;'>Automatize a conferência de jornadas com base nos arquivos PDF de contagem</p>
 """, unsafe_allow_html=True)
 
-# Limite de horas
 limite = st.number_input("Limite máximo de horas por dia (ex: 17.00)", min_value=0.0, max_value=24.0, value=17.00, step=0.25, format="%0.2f")
-
-# Verificação de registros idênticos
 verificar_identicos = st.checkbox("Verificar registros de entrada/saída idênticos", value=True)
 
-# Upload do arquivo PDF com espaçamento e container
 with st.container():
     st.markdown("""
     <h4 style='font-family: Roboto; color: #444;'>📎 Upload do Arquivo</h4>
