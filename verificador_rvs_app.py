@@ -4,6 +4,15 @@ import re
 from datetime import datetime
 from io import BytesIO
 
+# Função para detectar o formato e ajustar a extração
+def identificar_formato(linhas):
+    for linha in linhas:
+        if "A.01" in linha:  # Detecta o primeiro formato (com A.01)
+            return "formato_1"
+        elif "TOTAL" in linha:  # Detecta o segundo formato (com TOTAL)
+            return "formato_2"
+    return None
+
 # Configuração da página do Streamlit
 st.set_page_config(
     page_title="Verificador RVS",
@@ -98,33 +107,53 @@ if uploaded_file:
             texto = page.extract_text() or ""
             linhas = texto.split('\n')
             
-            for linha in linhas:
-                # Ajustando regex para capturar datas no formato dd/mm/yy
-                match_data = re.match(r'(\d{2}/\d{2}/\d{2})', linha)
-                if match_data:
-                    data_str = match_data.group(1)
-                    # Capturando os horários de entrada e saída (e tratando separação de horários)
-                    horarios = re.findall(r'\d{2}:\d{2}', linha)
-                    
-                    if len(horarios) < 2:  # Caso não haja entradas e saídas, ignorar
-                        continue
-                    
-                    valores = re.findall(r'\d+,\d+', linha)
-                    a01 = float(valores[0].replace(",", ".")) if valores else 0  # A01, a contagem de horas
-                    
-                    if a01 > limite:
-                        dias_excedidos.append((data_str, a01, page_num))  # Adicionando dia com horas excessivas
-                    
-                    pares = list(zip(horarios[::2], horarios[1::2]))  # Pares de entrada/saída
-                    for entrada, saida in pares:
-                        if entrada == saida:
-                            registros_iguais.append((data_str, entrada, page_num))  # Adicionando entradas iguais
+            formato = identificar_formato(linhas)  # Detecta o formato
 
-    # Exibir os resultados (dias e registros)
+            if formato == "formato_1":
+                # Primeiro formato (A.01)
+                for linha in linhas:
+                    match_data = re.match(r'(\d{2}/\d{2}/\d{2})', linha)
+                    if match_data:
+                        data_str = match_data.group(1)
+                        horarios = re.findall(r'\d{2}:\d{2}', linha)
+                        
+                        if len(horarios) < 2:
+                            continue
+                        
+                        valores = re.findall(r'\d+,\d+', linha)
+                        a01 = float(valores[0].replace(",", ".")) if valores else 0
+                        
+                        if a01 > limite:
+                            dias_excedidos.append((data_str, a01, page_num))
+                        pares = list(zip(horarios[::2], horarios[1::2]))
+                        for entrada, saida in pares:
+                            if entrada == saida:
+                                registros_iguais.append((data_str, entrada, page_num))
+            elif formato == "formato_2":
+                # Segundo formato (TOTAL)
+                for linha in linhas:
+                    match_data = re.match(r'(\d{2}/\d{2}/\d{2})', linha)
+                    if match_data:
+                        data_str = match_data.group(1)
+                        horarios = re.findall(r'\d{2}:\d{2}', linha)
+                        
+                        if len(horarios) < 2:
+                            continue
+                        
+                        valores = re.findall(r'\d+,\d+', linha)
+                        total = float(valores[-1].replace(",", ".")) if valores else 0  # Coluna "TOTAL"
+                        
+                        if total > limite:
+                            dias_excedidos.append((data_str, total, page_num))
+                        pares = list(zip(horarios[::2], horarios[1::2]))
+                        for entrada, saida in pares:
+                            if entrada == saida:
+                                registros_iguais.append((data_str, entrada, page_num))
+
+    # Exibir os resultados
     st.markdown('<h2 class="result-header">Resultado da Verificação</h2>', unsafe_allow_html=True)
-    
-    # Exibir dias excedidos
     st.markdown('<h3 class="subtitle">Dias com mais horas que o limite:</h3>', unsafe_allow_html=True)
+
     if dias_excedidos:
         for data, horas, pagina in dias_excedidos:
             dia, mes, ano = data.split('/')
