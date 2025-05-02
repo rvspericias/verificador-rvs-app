@@ -120,7 +120,7 @@ limite = st.number_input("Limite máximo de horas por dia (ex: 17.00)", min_valu
 verificar_identicos = st.checkbox("Verificar registros de entrada/saída idênticos", value=True)
 
 with st.container():
-    st.markdown("<h4>📎 ("Envie o PDF da contagem de horas", type=["pdf"])
+    st.markdown("<h4>📎 Envie o PDF da contagem de horas", type=["pdf"])
 
 if uploaded_file:
     dias_excedidos = []
