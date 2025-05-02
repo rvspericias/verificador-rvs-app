@@ -122,36 +122,36 @@ st.markdown(f"""
     </style>
 """, unsafe_allow_html=True)
 
-# Logo e centralização extra
+# Logo centralizada - agora com a imagem de fundo (NOVA)
 st.markdown("""
 <div class='logo-section'>
     <img src='https://raw.githubusercontent.com/rvspericias/verificador-rvs-app/refs/heads/main/fundo_rvs.png' alt='Logo RVS'/>
 </div>
 """, unsafe_allow_html=True)
 
-# Bloco de entrada de dados
+# Label: PDF da contagem
 st.markdown(
     "<div class='input-label'><span class='target'></span><span class='silver-label'>PDF da Contagem:</span></div>",
     unsafe_allow_html=True
 )
 pdf_file = st.file_uploader("Procurar Arquivo", type="pdf", label_visibility="collapsed")
 
+# Label: Limite de horas
 st.markdown(
     "<div class='input-label'><span class='target'></span><span class='silver-label'>Limite de horas:</span></div>",
     unsafe_allow_html=True
 )
 limit_hours = st.number_input("", min_value=0.0, max_value=24.0, value=17.0, step=0.25)
 
-# Checkbox destacado - verde por padrão e já marcado
+# Label: Checkbox verde
 st.markdown(
     "<div class='input-label'><span class='target'></span><span class='silver-label'>Verificar horários idênticos</span></div>",
     unsafe_allow_html=True
 )
 check_identical = st.checkbox(" ", value=True)
 
-# Botão - aparência moderna/futurística
+# Botão
 if st.button("EXECUTAR ANÁLISE"):
     st.success("Análise concluída.")
 
-# Espaço extra no final para respirar
 st.markdown("<br><br>", unsafe_allow_html=True)
