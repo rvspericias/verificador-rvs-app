@@ -141,7 +141,6 @@ uploaded_file = st.file_uploader("Envie o PDF da contagem", type=["pdf"])
 if uploaded_file:
     with pdfplumber.open(BytesIO(uploaded_file.read())) as pdf:
         texto = ""
-        # Passar o pdf inteiro para extração de texto
         for page in pdf.pages:
             texto += page.extract_text() or ""
 
