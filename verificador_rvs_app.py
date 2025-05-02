@@ -9,6 +9,17 @@ st.set_page_config(
     page_icon="https://raw.githubusercontent.com/carlosrvs/verificador-rvs-app/main/logo-min-flat.png",
     layout="centered"
 )
+import streamlit as st
+import pdfplumber
+import re
+from io import BytesIO
+from datetime import datetime
+
+st.set_page_config(
+    page_title="Verificador RVS",
+    page_icon="https://raw.githubusercontent.com/carlosrvs/verificador-rvs-app/main/logo-min-flat.png",
+    layout="centered"
+)
 
 st.markdown("""
 <style>
@@ -44,7 +55,6 @@ st.markdown("""
         stroke: #39ef74 !important;
         fill: #39ef74 !important;
     }
-
     .header-gold {
         color: #d4af37 !important;
         font-weight: 900;
@@ -54,7 +64,6 @@ st.markdown("""
         text-shadow: 0px 4px 10px rgba(0, 0, 0, 0.4);
         text-align: left;
     }
-
     .result-box {
         background: #fff8dc;
         color: #333333;
@@ -77,19 +86,34 @@ st.markdown("""
         margin-bottom: 0.8em;
     }
 
-    /* ====== ESTILIZAÇÃO DOS LABELS ====== */
-    /* Widgets (e.g. NumberInput, Checkbox, FileUploader) */
-    div[data-testid="stNumberInput"] > label,
-    div[data-testid="stFileUploader"] > label,
-    div[data-testid="stCheckbox"] > label {
-        color: #d4af37 !important; /* Cor dourada */
-        font-weight: 700 !important; /* Fonte em bold */
-        font-size: 1.1rem !important; /* Levemente maior */
+    /* ====== ESTILIZAÇÃO DOS LABELS DOS WIDGETS ====== */
+    /* st.number_input */
+    div[data-testid="stNumberInput"] > label {
+        color: #d4af37 !important; 
+        font-weight: 700 !important;
+        font-size: 1.1rem !important;
         letter-spacing: 0.02em;
-        text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6); /* Sombra discreta */
+        text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
         margin-bottom: 6px !important;
     }
-    /* ====== FIM ESTILIZAÇÃO DOS LABELS ====== */
+    /* st.file_uploader */
+    div[data-testid="stFileUploader"] > label {
+        color: #d4af37 !important; 
+        font-weight: 700 !important;
+        font-size: 1.1rem !important;
+        letter-spacing: 0.02em;
+        text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
+        margin-bottom: 6px !important;
+    }
+    /* st.checkbox (ajuste correto para o texto da label!) */
+    div[data-testid="stCheckbox"] > label > div[data-testid="stMarkdownContainer"] > span {
+        color: #d4af37 !important;
+        font-weight: 700 !important;
+        font-size: 1.1rem !important;
+        letter-spacing: 0.02em;
+        text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
+    }
+    /* ====== FIM DOS AJUSTES ====== */
 </style>
 """, unsafe_allow_html=True)
 
