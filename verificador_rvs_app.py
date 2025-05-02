@@ -4,15 +4,21 @@ import re
 from io import BytesIO
 from datetime import datetime
 
+st.set_page_config(
+    page_title="Verificador RVS",
+    page_icon="https://raw.githubusercontent.com/carlosrvs/verificador-rvs-app/main/logo-min-flat.png",
+    layout="centered"
+)
+
 st.markdown("""
-<div style='display: flex; justify-content: center; margin-top: 32px; margin-bottom: 10px;'>
-  <img 
-    src='https://raw.githubusercontent.com/rvspericias/verificador-rvs-app/refs/heads/main/logo-min-flat.png' 
-    width='112'
-    style='filter: drop-shadow(0 8px 25px #FFD700BB) drop-shadow(0 0px 1.5px #FFF);'
-    alt='Logo RVS'
-  />
-</div>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
+
+    html, body, [class*="css"] {
+        font-family: 'Poppins', sans-serif !important;
+        background-color: #000 !important;
+        color: #fff !important;
+    }
 
     /* Painel centralizado chumbo */
     .appview-container, .main, .block-container {
@@ -28,35 +34,38 @@ st.markdown("""
         max-width: 650px !important;
     }
 
-    /* Logo com glow dourado */
-    .center-logo {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin: 2em 0 0.5em 0;
-    }
-    .logo-glow {
-        box-shadow: 0 0 40px 7px #FFD70090, 0 0 1px 1px #fff4;
-        border-radius: 50%;
-        background: #181710;
-        padding: 16px;
-        display: inline-block;
-    }
-
-    /* Títulos e textos */
-    h1, h4, .stSubheader {
+    /* Títulos destacados */
+    .rvs-main-title, .rvs-section-title {
         font-family: 'Poppins', sans-serif !important;
         font-weight: 700 !important;
-        margin-bottom: 0.1em !important;
-        letter-spacing: 1.5px !important;
-        color: #fff !important;
-        background: none !important;
+        letter-spacing: 1px;
     }
-    h1 span {
+    .rvs-main-title {
+        font-size: 2.2em;
         color: #FFD700 !important;
-        text-shadow: 0 0 16px #FFD70060, 0 1px 0 #B7974C;
-        font-weight: bold;
+        text-shadow: 0 2px 12px #B7974C99, 0 1px 0 #fff;
+        margin-bottom: 16px;
+        margin-top: 10px;
     }
+    .rvs-section-title {
+        font-size: 1.35em;
+        color: #fffbea !important;
+        text-shadow: 0 1.5px 8px #FFD700CC, 0 1.5px 0 #36330099;
+        margin-bottom: 10px;
+        margin-top: 32px;
+    }
+
+    /* Linhas divisórias douradas */
+    .divider-gold {
+        width: 90px;
+        height: 3px;
+        border-radius: 2px;
+        margin: 0.8em 0 1.6em 0;
+        background: linear-gradient(90deg,#FFD700 45%,#B7974C 100%);
+        box-shadow: 0 0 10px #613d0680;
+    }
+
+    /* Subtítulo e descrições */
     p, label, .stNumberInput label {
         color: #bbb !important;
         font-size: 17px !important;
@@ -113,16 +122,6 @@ st.markdown("""
         box-shadow: 0 0 16px #FFD70088;
     }
 
-    /* Linhas douradas/geometria sutil */
-    .divider-gold {
-        width: 90px;
-        height: 3px;
-        border-radius: 2px;
-        margin: 0.8em 0 1.6em 0;
-        background: linear-gradient(90deg,#FFD700 45%,#B7974C 100%);
-        box-shadow: 0 0 10px #613d0680;
-    }
-
     /* Cartões e avisos */
     .rvs-card {
         background: linear-gradient(90deg,#232323 60%,#282511 100%);
@@ -159,25 +158,33 @@ st.markdown("""
     /* Responsividade extra */
     @media (max-width: 650px) {
         .main > div:first-child, .block-container { padding: 1.2em !important; }
-        h1 { font-size: 2em !important; }
+        .rvs-main-title { font-size: 1.3em !important; }
         .divider-gold { width: 60px; }
     }
 </style>
 """, unsafe_allow_html=True)
 
-# Logo centralizada com efeito Glow
+# ---- LOGO (apenas imagem com efeito glow, centralizada) ----
 st.markdown("""
-<div class='center-logo'>
-    <img src='https://raw.githubusercontent.com/rvspericias/verificador-rvs-app/refs/heads/main/logo-min-flat.png' width='120' class='logo-glow' />
+<div style='display: flex; justify-content: center; margin-top: 32px; margin-bottom: 10px;'>
+  <img 
+    src='https://raw.githubusercontent.com/rvspericias/verificador-rvs-app/refs/heads/main/logo-min-flat.png' 
+    width='112'
+    style='filter: drop-shadow(0 8px 22px #FFD700BB) drop-shadow(0 0.5px 1.5px #FFF);'
+    alt='Logo RVS'
+  />
 </div>
 """, unsafe_allow_html=True)
 
-# Título principal e subtítulo
-st.markdown("""
-<h1>Verificador <span>RVS</span></h1>
-<div class='divider-gold'></div>
-<p style='margin-top: -1em; margin-bottom: 1.0em;font-size:21px;letter-spacing:0.02em;'>Automatize a conferência de jornadas com base nos arquivos PDF de contagem</p>
-""", unsafe_allow_html=True)
+# ---- TÍTULO PRINCIPAL ----
+st.markdown("<h1 class='rvs-main-title'>Verificador RVS</h1>", unsafe_allow_html=True)
+st.markdown("<div class='divider-gold'></div>", unsafe_allow_html=True)
+st.markdown(
+    "<p style='margin-top: -1em; margin-bottom: 1.0em;font-size:21px;letter-spacing:0.02em;'>"
+    "Automatize a conferência de jornadas com base nos arquivos PDF de contagem"
+    "</p>",
+    unsafe_allow_html=True
+)
 
 # Dicionário de meses em português
 MESES_PT = {
@@ -191,7 +198,7 @@ verificar_identicos = st.checkbox("Verificar registros de entrada/saída idênti
 
 with st.container():
     st.markdown("""
-    <h4>📎 Upload do Arquivo</h4>
+    <h4 style='color: #FFD700; font-weight: 600;'>📎 Upload do Arquivo</h4>
     <p>Selecione o arquivo PDF da contagem de horas para verificar os registros.</p>
     """, unsafe_allow_html=True)
     uploaded_file = st.file_uploader("Envie o PDF da contagem de horas", type=["pdf"])
@@ -236,10 +243,10 @@ if uploaded_file:
                                 registros_iguais.append((linha[:8], f"{ent} - {sai}", mes_ref, i+1))
 
     st.markdown("<div class='divider-gold'></div>", unsafe_allow_html=True)
-    st.subheader("Resultado da Verificação")
+    st.markdown("<h2 class='rvs-main-title'>Resultado da Verificação</h2>", unsafe_allow_html=True)
 
     if dias_excedidos:
-        st.markdown("### Dias com mais horas que o limite:")
+        st.markdown("<h3 class='rvs-section-title'>Dias com mais horas que o limite:</h3>", unsafe_allow_html=True)
         for d in dias_excedidos:
             st.markdown(f"""
             <div class='rvs-card'>
@@ -255,7 +262,7 @@ if uploaded_file:
 
     if verificar_identicos:
         if registros_iguais:
-            st.markdown("### Registros com entrada/saída idênticos:")
+            st.markdown("<h3 class='rvs-section-title'>Registros com entrada/saída idênticos:</h3>", unsafe_allow_html=True)
             for r in registros_iguais:
                 st.markdown(f"""
                 <div class='rvs-card grey'>
