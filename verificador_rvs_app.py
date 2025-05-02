@@ -76,12 +76,24 @@ st.markdown("""
         border-left: 8px solid #468cfb;
     }
 
-    /* Subtítulos Menores */
     .subtitle-custom {
         font-size: 1.1rem !important;
         color: #e4e4e4 !important;
         margin-bottom: 0.8em;
     }
+
+    /* ====== AJUSTE DE LEGIBILIDADE PARA LABELS DOS INPUTS ====== */
+    /* Labels dos widgets interativos (inputs, checkboxes, upload) */
+    .stNumberInput label, .stCheckbox label, .stFileUploader label {
+        color: #fafafa !important;            /* Branco para realce/contraste */
+        font-weight: 700 !important;
+        font-size: 1.07rem !important;
+        letter-spacing: 0.01em;
+        text-shadow: 0 1px 6px #2228;
+        margin-bottom: 3px !important;
+        margin-top: 0.8em !important;
+    }
+    /* ====== FIM DO AJUSTE ====== */
 </style>
 """, unsafe_allow_html=True)
 
@@ -94,7 +106,6 @@ st.markdown("""
 
 ABR_DIAS_PT = ["SEG", "TER", "QUA", "QUI", "SEX", "SAB", "DOM"]
 
-# Tradução manual dos meses para português
 MESES_PT = {
     "January": "JANEIRO", "February": "FEVEREIRO", "March": "MARÇO", "April": "ABRIL",
     "May": "MAIO", "June": "JUNHO", "July": "JULHO", "August": "AGOSTO",
@@ -107,7 +118,6 @@ def dia_da_semana(data_str):
 
 limite = st.number_input("Limite máximo de horas por dia (ex: 17.00)", min_value=0.0, max_value=24.0, value=17.00, step=0.25, format="%0.2f")
 verificar_identicos = st.checkbox("Verificar registros de entrada/saída idênticos", value=True)
-
 uploaded_file = st.file_uploader("Envie o PDF da contagem", type=["pdf"])
 
 if uploaded_file:
@@ -149,16 +159,13 @@ if uploaded_file:
                             if entrada == saida:
                                 registros_iguais.append((f"{data_str} {dia_semana}", f"{entrada} - {saida}", ultima_data, i+1))
 
-    # Obtém o mês/ano com base na última data, traduzido manualmente
     mes_extenso = MESES_PT[ultima_data.strftime('%B')] if ultima_data else 'MÊS DESCONHECIDO'
     ano_ref = ultima_data.year if ultima_data else '---'
     mes_referencia = f"{mes_extenso}/{ano_ref}"
 
-    # Título da Verificação
     st.markdown('<div class="header-gold">Resultado da Verificação</div>', unsafe_allow_html=True)
     st.markdown('<div class="subtitle-custom">Dias com mais horas que o limite:</div>', unsafe_allow_html=True)
 
-    # Exibição dos resultados em caixas
     if dias_excedidos:
         for d in dias_excedidos:
             st.markdown(
