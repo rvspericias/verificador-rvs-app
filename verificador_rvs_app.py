@@ -71,12 +71,16 @@ st.markdown("""
 <p>Automatize a conferência de jornadas com base nos arquivos PDF de contagem.</p>
 """, unsafe_allow_html=True)
 
-# Mapeamento de meses (inglês para português)
+# Mapeamento de meses e dias
 MES_EXTENSO = {
     "01": "JANEIRO", "02": "FEVEREIRO", "03": "MARÇO",
     "04": "ABRIL", "05": "MAIO", "06": "JUNHO",
     "07": "JULHO", "08": "AGOSTO", "09": "SETEMBRO",
     "10": "OUTUBRO", "11": "NOVEMBRO", "12": "DEZEMBRO"
+}
+DIA_ABREV = {
+    0: "SEG", 1: "TER", 2: "QUA", 3: "QUI",
+    4: "SEX", 5: "SAB", 6: "DOM"
 }
 
 limite = st.number_input("Limite máximo de horas por dia (ex: 17.00)", min_value=0.0, max_value=24.0, value=17.00, step=0.25)
@@ -100,23 +104,26 @@ if uploaded_file:
                     a01 = float(valores[0].replace(",", ".")) if valores else 0
                     if a01 > limite:
                         dias_excedidos.append((data_str, a01, page_num))
-                    # Verificar registros idênticos
                     pares = list(zip(horarios[::2], horarios[1::2]))
                     for entrada, saida in pares:
                         if entrada == saida:
-                            registros_iguais.append((data_str, f"{entrada} - {saida}"))
+                            registros_iguais.append((data_str, entrada, page_num))
 
     st.markdown('<h2 class="result-header">Resultado da Verificação</h2>', unsafe_allow_html=True)
-
     st.markdown('<h3 class="subtitle">Dias com mais horas que o limite:</h3>', unsafe_allow_html=True)
 
     if dias_excedidos:
         for data, horas, pagina in dias_excedidos:
-            # Extrair o mês/ano
             dia, mes, ano = data.split('/')
+            try:
+                dt_object = datetime.strptime(data, "%d/%m/%y")
+            except ValueError:
+                dt_object = None
+            dia_semana = DIA_ABREV[dt_object.weekday()] if dt_object else "N/A"
             mes_extenso = MES_EXTENSO[mes]
+            ano_extenso = 2000 + int(ano) if int(ano) < 100 else int(ano)
             st.markdown(
-                f"<div class='result-box exceeded'><strong>{data}</strong> | {horas:.2f} horas | {mes_extenso}/{2000+int(ano)} | Página {pagina} do PDF</div>",
+                f"<div class='result-box exceeded'><strong>{data}</strong> | {dia_semana} | {horas:.2f} horas | {mes_extenso}/{ano_extenso} | Página {pagina} do PDF</div>",
                 unsafe_allow_html=True
             )
     else:
@@ -128,9 +135,17 @@ if uploaded_file:
     st.markdown('<h3 class="subtitle">Registros de entrada/saída idênticos:</h3>', unsafe_allow_html=True)
 
     if registros_iguais:
-        for data, registro in registros_iguais:
+        for data, registro, pagina in registros_iguais:
+            dia, mes, ano = data.split('/')
+            try:
+                dt_object = datetime.strptime(data, "%d/%m/%y")
+            except ValueError:
+                dt_object = None
+            dia_semana = DIA_ABREV[dt_object.weekday()] if dt_object else "N/A"
+            mes_extenso = MES_EXTENSO[mes]
+            ano_extenso = 2000 + int(ano) if int(ano) < 100 else int(ano)
             st.markdown(
-                f"<div class='result-box identical'><strong>{data}</strong> | {registro}</div>",
+                f"<div class='result-box identical'><strong>{data}</strong> | {dia_semana} | {registro} | {mes_extenso}/{ano_extenso} | Página {pagina} do PDF</div>",
                 unsafe_allow_html=True
             )
     else:
