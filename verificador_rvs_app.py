@@ -147,7 +147,6 @@ if uploaded_file:
         # Identificar formato
         formato = identificar_formato(texto)
         
-        # Processamento conforme formato
         if formato == 'novo':
             dias_excedidos, registros_iguais = processar_novo(texto, limite, pdf)
         else:
