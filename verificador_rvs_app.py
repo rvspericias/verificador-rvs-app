@@ -139,10 +139,8 @@ uploaded_file = st.file_uploader("Envie o PDF da contagem", type=["pdf"])
 if uploaded_file:
     with pdfplumber.open(BytesIO(uploaded_file.read())) as pdf:
         texto = ""
-        page_num = 1  # Inicializa o contador de páginas
-        for page in pdf.pages:
+        for page_num, page in enumerate(pdf.pages, start=1):
             texto += page.extract_text() or ""
-            page_num += 1  # Incrementa o número da página após processar uma página
 
         # Identificar formato
         formato = identificar_formato(texto)
