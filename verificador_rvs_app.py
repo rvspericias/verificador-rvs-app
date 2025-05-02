@@ -96,7 +96,7 @@ if uploaded_file:
                             registros_iguais.append((data_str, f"{entrada} - {saida}"))
 
     # Resultado
-    st.markdown('<h2 class="subtitle">Resultado da Verificação</h2>', unsafe_allow_html=True)
+    st.markdown('<h2 class="subtitle" style="color: #d4af37;">Resultado da Verificação</h2>', unsafe_allow_html=True)
 
     # Dias que excedem o limite
     st.markdown('<h3 class="subtitle">Dias com mais horas que o limite:</h4>', unsafe_allow_html=True)
