@@ -161,50 +161,31 @@ if uploaded_file:
                             if entrada == saida:
                                 registros_iguais.append((f"{data_str} {dia_semana}", f"{entrada} - {saida}", mes_ref, i+1))
 
-            import streamlit as st
+    st.markdown('<div class="header-gold">Resultado da Verificação</div>', unsafe_allow_html=True)
 
-            # Defina o seu CSS personalizado
-            st.markdown("""
-                <style>
-                .header-gold {
-                font-size: 24px;
-                font-weight: bold;
-                color: gold;
-                text-align: center;
-                margin-top: 10px;
-            }
-            .result-block {
-            margin-top: 5px;  # Ajuste também outros margens, se necessário
-            }
-    </style>
-""", unsafe_allow_html=True)
-
-# Use a classe personalizada para o título
-st.markdown('<div class="header-gold">Resultado da Verificação</div>', unsafe_allow_html=True)
-
-if dias_excedidos:  # Corrigido para a indentação correta
-    st.write("### Dias com mais horas que o limite:")
-    for d in dias_excedidos:
-        st.markdown(
-            f"<div class='result-block'><strong>{d[0]}</strong> | {d[1]} | {d[2]} | Página {d[3]}</div>",
-            unsafe_allow_html=True
-        )
-else:
-    st.markdown(
-        "<div class='result-block ok'><strong>Nenhum dia excedeu o limite de horas.</strong></div>",
-        unsafe_allow_html=True
-    )
-
-if verificar_identicos:
-    if registros_iguais:
-        st.write("### Registros com entrada/saída idênticos:")
-        for r in registros_iguais:
+    if dias_excedidos:
+        st.write("### Dias com mais horas que o limite:")
+        for d in dias_excedidos:
             st.markdown(
-                f"<div class='result-block none'><strong>{r[0]}</strong> | {r[1]} | {r[2]} | Página {r[3]}</div>",
+                f"<div class='result-block'><strong>{d[0]}</strong> | {d[1]} | {d[2]} | Página {d[3]}</div>",
                 unsafe_allow_html=True
             )
     else:
         st.markdown(
-            "<div class='result-block none'>Nenhum registro idêntico encontrado.</div>",
+            "<div class='result-block ok'><strong>Nenhum dia excedeu o limite de horas.</strong></div>",
             unsafe_allow_html=True
         )
+
+    if verificar_identicos:
+        if registros_iguais:
+            st.write("### Registros com entrada/saída idênticos:")
+            for r in registros_iguais:
+                st.markdown(
+                    f"<div class='result-block none'><strong>{r[0]}</strong> | {r[1]} | {r[2]} | Página {r[3]}</div>",
+                    unsafe_allow_html=True
+                )
+        else:
+            st.markdown(
+                "<div class='result-block none'>Nenhum registro idêntico encontrado.</div>",
+                unsafe_allow_html=True
+            )
