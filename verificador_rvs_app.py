@@ -1,6 +1,7 @@
 import streamlit as st
 
 st.set_page_config(page_title="RVS PERÍCIAS", layout="centered")
+
 # Cores institucionais
 GOLD = "#FFC600"
 SILVER = "#c0c0c0"
@@ -25,7 +26,7 @@ st.markdown(f"""
             min-width: 320px;
         }}
 
-        /* Logo */
+        /* Logo centralizada */
         .logo-section {{
             display: flex;
             flex-direction: column;
@@ -34,10 +35,10 @@ st.markdown(f"""
             margin-bottom: 16px;
         }}
         .logo-section img {{
-            width: 160px;
+            width: 180px; /* Ajuste para o tamanho desejado */
         }}
 
-        /* Alvos visuais via círculo simples */
+        /* Alvos prateados */
         .target {{
             display: inline-block;
             width: 24px;
@@ -50,7 +51,7 @@ st.markdown(f"""
             position: relative;
             top: 6px;
         }}
-        /* Prata destacado e glow */
+        /* Labels prateadas com destaque */
         .silver-label {{
             color: {SILVER};
             font-weight: 600;
@@ -67,7 +68,7 @@ st.markdown(f"""
             gap:0.18em;
         }}
 
-        /* Checkbox custom checkmark verde */
+        /* Checkbox customizado com check verde */
         section[data-testid="stCheckbox"] label {{
             color: {SILVER};
             font-size:1.16rem !important;
@@ -83,7 +84,7 @@ st.markdown(f"""
             filter: drop-shadow(0 0 6px #1ff96aaa);
         }}
 
-        /* Input fields */
+        /* Inputs */
         .stNumberInput>div>div>input, .stTextInput>div>div>input {{
             background: #232527 !important;
             color: {SILVER};
@@ -92,15 +93,7 @@ st.markdown(f"""
             font-size: 1.13em !important;
         }}
 
-        /* File uploader */
-        [data-testid="stFileUploader"] {{
-            background: #191a1bCC;
-            border: 1.4px solid {SILVER}90;
-            border-radius: 10px;
-            color: {SILVER};
-        }}
-
-        /* Botão bonito */
+        /* Botão estilizado */
         .stButton>button {{
             background: linear-gradient(93deg, {SILVER} 12%, {GOLD} 100%);
             color: #242526;
@@ -112,7 +105,7 @@ st.markdown(f"""
             box-shadow: 0 4px 24px {GOLD}30, 0 2px 2px #fff3;
             padding: 0.55em 1.9em;
             margin-top: 25px;
-            transition: box-shadow 0.2s,background 0.15s;
+            transition: box-shadow 0.2s, background 0.15s;
         }}
         .stButton>button:hover {{
             background: linear-gradient(85deg,#fff, {SILVER} 40%, {GOLD} 98%);
@@ -122,36 +115,25 @@ st.markdown(f"""
     </style>
 """, unsafe_allow_html=True)
 
-# Logo centralizada - agora com a imagem de fundo (NOVA)
+# Adicionando a nova logo
 st.markdown("""
 <div class='logo-section'>
-    <img src='https://raw.githubusercontent.com/rvspericias/verificador-rvs-app/refs/heads/main/fundo_rvs.png' alt='Logo RVS'/>
+    <img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAYAAAB4snr3AAAAAXNSR0IArs4c6QAAAARzQklUCAgICHwIZIgAAAcYSURBVHic7d3dd5RFFMdxfbRCjDRQmAh5xJACklVrsKWWzrpcNWlCsppqJpQFp3oljCgoRCNiCJHAN0BQkdFLrsUKkskoBiQYYOkogJxdVxxT3bRDnuv+63s+SUMw3Ob3YPukYwzMyW/NZ5pgBAgsAAAAAAAAAYIbseddnQzPKQwPg6mOF47JXjp3IpY4XjMFc1no5XONZOXHhXF1umOV43fyoljsuXFHsno5XLrjXF09ocm4AAAAAAAAAAGCDQ38egAAAAAAAAAAQKoHhnFD89U486M8cw9443NDTh05U6MGcdOZNzRWMeekmYuMAAAAAAAAAAOAHDX/xPzs366OVT1czjtkj+dFeR73BQAAAAAAAAA2GIZxrzoWzTkiY56SZtzWGYbzrTYsnVoAAAAAAAAAYI9HjEAAAAAAAAAAGGSqvsAAAAAAAAAAGCQKwAAAAAAAAAA2FIlgAAAAAAAAAAWELbAAAAAAAAAAA2FInaAb/DA88A18wxrjGj%2BM+I53yKPRxgAAAAAAAAAAOB16PN57Y58AAAAAAAAAAA4PUwwPggAAAAAAAAAADhH3h/AgAAAAAAAAAADghYPwgAAAAAAAAAAThF3R%2FAAAAAAAAAAA4IWg%2BCEAAAAAAAAAADgFaD8IAAAAAAAAAAAOI1g/CAAAAAAAAAAE4Zd0fwAAAAAAAAAADhhaD4IQAAAAAAAAAAOAVoPwgAAAAAAAAADiNYPwgAAAAAAAAABOEXdH8AAAAAAAAAADghaD4IQAAAAAAAAAA4BWg/CAAAAAAAAAAOI1g/CAAAAAAAAAAE4Zd0fwAAAAAAAAAADhhaD4IQAAAAAAAAAA4BWg/CAAAAAAAAAAOI1g/CAAAAAAAAAAE4Zd0fwAAAAAAAAAADhhaD4IQAAAAAAAAAA4BWg/CAAAAAAAAAAOI1g/CAAAAAAAAAAE4Zd0fwAAAAAAAAAADhhaD4IQAAAAAAAAAA4BWg/CAAAAAAAAAAOI1g/CAAAAAAAAAAE4Zd12Aj+kr4dHbdCAOU/oAAAAAElFTkSuQmCC' alt='Logo RVS'/>
 </div>
 """, unsafe_allow_html=True)
 
-# Label: PDF da contagem
-st.markdown(
-    "<div class='input-label'><span class='target'></span><span class='silver-label'>PDF da Contagem:</span></div>",
-    unsafe_allow_html=True
-)
+# Campo: PDF da Contagem
+st.markdown("<div class='input-label'><span class='target'></span><span class='silver-label'>PDF da Contagem:</span></div>", unsafe_allow_html=True)
 pdf_file = st.file_uploader("Procurar Arquivo", type="pdf", label_visibility="collapsed")
 
-# Label: Limite de horas
-st.markdown(
-    "<div class='input-label'><span class='target'></span><span class='silver-label'>Limite de horas:</span></div>",
-    unsafe_allow_html=True
-)
+# Campo: Limite de horas
+st.markdown("<div class='input-label'><span class='target'></span><span class='silver-label'>Limite de horas:</span></div>", unsafe_allow_html=True)
 limit_hours = st.number_input("", min_value=0.0, max_value=24.0, value=17.0, step=0.25)
 
-# Label: Checkbox verde
-st.markdown(
-    "<div class='input-label'><span class='target'></span><span class='silver-label'>Verificar horários idênticos</span></div>",
-    unsafe_allow_html=True
-)
-check_identical = st.checkbox(" ", value=True)
+# Checkbox - Verificar horários idênticos
+st.markdown("<div class='input-label'><span class='target'></span><span class='silver-label'>Verificar horários idênticos</span></div>", unsafe_allow_html=True)
+check_identical = st.checkbox("", value=True)
 
-# Botão
+# Botão de análise
 if st.button("EXECUTAR ANÁLISE"):
     st.success("Análise concluída.")
-
-st.markdown("<br><br>", unsafe_allow_html=True)
