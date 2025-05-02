@@ -11,7 +11,7 @@ def identificar_formato(texto):
     return 'antigo'
 
 # Função para extrair dados no formato antigo (A.01)
-def processar_antigo(texto, limite):
+def processar_antigo(texto, limite, page_num):
     dias_excedidos = []
     registros_iguais = []
     linhas = texto.split('\n')
@@ -37,7 +37,7 @@ def processar_antigo(texto, limite):
     return dias_excedidos, registros_iguais
 
 # Função para extrair dados no formato novo
-def processar_novo(texto, limite):
+def processar_novo(texto, limite, page_num):
     dias_excedidos = []
     registros_iguais = []
     linhas = texto.split('\n')
@@ -135,16 +135,18 @@ uploaded_file = st.file_uploader("Envie o PDF da contagem", type=["pdf"])
 if uploaded_file:
     with pdfplumber.open(BytesIO(uploaded_file.read())) as pdf:
         texto = ""
+        page_num = 1  # Inicializa o contador de página
         for page in pdf.pages:
             texto += page.extract_text() or ""
-        
+            page_num += 1  # Incrementa o número da página
+
         # Identificar formato
         formato = identificar_formato(texto)
         
         if formato == 'novo':
-            dias_excedidos, registros_iguais = processar_novo(texto, limite)
+            dias_excedidos, registros_iguais = processar_novo(texto, limite, page_num)
         else:
-            dias_excedidos, registros_iguais = processar_antigo(texto, limite)
+            dias_excedidos, registros_iguais = processar_antigo(texto, limite, page_num)
 
         st.markdown('<h2 class="result-header">Resultado da Verificação</h2>', unsafe_allow_html=True)
         
@@ -152,7 +154,7 @@ if uploaded_file:
         st.markdown('<h3 class="subtitle">Dias com mais horas que o limite:</h3>', unsafe_allow_html=True)
         if dias_excedidos:
             for data, horas, dia_semana, ano, pagina in dias_excedidos:
-                st.markdown(f"<div class='result-box exceeded'><strong>{data}</strong> | {horas:.2f} horas | {dia_semana} | {pagina} do PDF</div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='result-box exceeded'><strong>{data}</strong> | {horas:.2f} horas | {dia_semana} | Página {pagina} do PDF</div>", unsafe_allow_html=True)
         else:
             st.markdown("<div class='result-box exceeded'>Nenhum dia excedeu o limite de horas.</div>", unsafe_allow_html=True)
 
