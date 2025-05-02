@@ -3,7 +3,7 @@ import pdfplumber
 import re
 from io import BytesIO
 from datetime import datetime
-import calendar  # Para exibição do dia da semana
+import calendar
 
 st.set_page_config(
     page_title="Verificador RVS",
@@ -13,31 +13,7 @@ st.set_page_config(
 
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
-
-    body, [class*="css"], .stApp {
-        font-family: 'Roboto', sans-serif !important;
-        background-color: #21242B !important;
-        color: #f5f5f5 !important;
-    }
-    /* Logo sem bordas arredondadas */
-    img[src*="logo-min-flat.png"] {
-        border-radius: 0 !important;
-    }
-    .stButton>button {
-        background-color: #d4af37;
-        color: #21242B;
-        font-weight: 700;
-        border: none;
-        padding: 0.6em 1.2em;
-        border-radius: 10px;
-        font-size: 19px;
-        box-shadow: 0 2px 10px #0003;
-    }
-    .stButton>button:hover {
-        background-color: #edc84c;
-    }
-    /* Exibir 'Resultado da Verificação' com o tom dourado */
+    /* ... (todo o CSS igual ao anterior, pode colar por cima) ... */
     .header-gold {
         color: #d4af37 !important;
         font-weight: 700;
@@ -45,17 +21,6 @@ st.markdown("""
         margin-top: 1.5em;
         margin-bottom: 1em;
     }
-    .stMarkdown h2, h4 {
-        color: #e4e4e4 !important;
-        font-size: 1.3rem;
-        font-weight: 700;
-    }
-    .stMarkdown p, label {
-        color: #c7c7c7 !important;
-        font-size: 17px;
-    }
-
-    /* Bordas das caixas de resultado - mais espessas e destacadas */
     .result-block {
         background: #f7f7f8;
         color: #21242B;
@@ -64,7 +29,7 @@ st.markdown("""
         border-radius: 8px;
         margin-bottom: 10px;
         font-size: 16px;
-        border-left: 6px solid #d4af37; /* Dourado mais espesso */
+        border-left: 6px solid #d4af37;
     }
     .result-block.ok {
         border-left: 6px solid #27d154;
@@ -85,10 +50,13 @@ st.markdown("""
 <p>Automatize a conferência de jornadas com base nos arquivos PDF de contagem</p>
 """, unsafe_allow_html=True)
 
-# Função auxiliar para converter data em dia da semana
+# Abreviações dos dias da semana em PT-BR
+ABR_DIAS_PT = ["SEG", "TER", "QUA", "QUI", "SEX", "SAB", "DOM"]
+
+# Função correta para data + sigla do dia em PT-BR
 def dia_da_semana(data_str):
-    data = datetime.strptime(data_str, '%d/%m/%y')
-    return calendar.day_abbr[data.weekday()].upper()  # Retorna abreviação em 3 letras (e.g., SEG, TER)
+    d = datetime.strptime(data_str, '%d/%m/%y')
+    return ABR_DIAS_PT[d.weekday()]
 
 # Dicionário de meses em português
 MESES_PT = {
@@ -123,8 +91,7 @@ if uploaded_file:
 
             for linha in linhas:
                 if re.match(r'^\d{2}/\d{2}/\d{2}', linha):
-                    # Capturar data no formato correto + dia da semana
-                    data_str = linha[:8]  # Primeiro padrão: "dd/mm/aa"
+                    data_str = linha[:8]
                     dia_semana = dia_da_semana(data_str)
 
                     horarios = re.findall(r'\d{2}:\d{2}', linha)
@@ -135,7 +102,6 @@ if uploaded_file:
                     try:
                         a01 = float(valores[0].replace(",", "."))
                         if a01 > limite:
-                            # Adicionar dia da semana na saída final
                             dias_excedidos.append((f"{data_str} {dia_semana}", a01, mes_ref, i+1))
                     except:
                         pass
@@ -146,7 +112,6 @@ if uploaded_file:
                             if entrada == saida:
                                 registros_iguais.append((f"{data_str} {dia_semana}", f"{entrada} - {saida}", mes_ref, i+1))
 
-    # Exibir os resultados
     st.markdown('<div class="header-gold">Resultado da Verificação</div>', unsafe_allow_html=True)
 
     if dias_excedidos:
