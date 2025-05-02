@@ -140,6 +140,7 @@ if uploaded_file:
                         if len(horarios) < 2:
                             continue
                         
+                        # Alteração para capturar o "TOTAL"
                         valores = re.findall(r'\d+,\d+', linha)
                         total = float(valores[-1].replace(",", ".")) if valores else 0  # Coluna "TOTAL"
                         
