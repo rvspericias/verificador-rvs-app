@@ -142,10 +142,12 @@ if uploaded_file:
                         
                         # Alteração para capturar o "TOTAL"
                         valores = re.findall(r'\d+,\d+', linha)
-                        total = float(valores[-1].replace(",", ".")) if valores else 0  # Coluna "TOTAL"
-                        
-                        if total > limite:
-                            dias_excedidos.append((data_str, total, page_num))
+                        if valores:
+                            total = float(valores[-1].replace(",", "."))  # Coluna "TOTAL"
+                            
+                            # Verificando se o total excede o limite
+                            if total > limite:
+                                dias_excedidos.append((data_str, total, page_num))
                         pares = list(zip(horarios[::2], horarios[1::2]))
                         for entrada, saida in pares:
                             if entrada == saida:
