@@ -45,7 +45,6 @@ st.markdown("""
         fill: #39ef74 !important;
     }
 
-    /* ===== Título da Verificação ===== */
     .header-gold {
         color: #d4af37 !important;
         font-weight: 900;
@@ -56,7 +55,6 @@ st.markdown("""
         text-align: left;
     }
 
-    /* ===== Caixa de Resultados ===== */
     .result-box {
         background: #fff8dc;
         color: #333333;
@@ -68,32 +66,33 @@ st.markdown("""
         font-size: 15px;
         line-height: 1.5;
     }
-
-    /* ===== Caixa para Nenhum Registro Encontrado ===== */
     .result-box.none {
         background: #eaf4ff;
         color: #163a67;
         border-left: 8px solid #468cfb;
     }
-
     .subtitle-custom {
         font-size: 1.1rem !important;
         color: #e4e4e4 !important;
         margin-bottom: 0.8em;
     }
 
-    /* ====== AJUSTE DE LEGIBILIDADE PARA LABELS DOS INPUTS ====== */
-    /* Labels dos widgets interativos (inputs, checkboxes, upload) */
-    .stNumberInput label, .stCheckbox label, .stFileUploader label {
-        color: #fafafa !important;            /* Branco para realce/contraste */
-        font-weight: 700 !important;
-        font-size: 1.07rem !important;
+    /* ====== NOVO: LEGIBILIDADE DAS LABELS DOS INPUTS ====== */
+    /* Label do st.number_input */
+    div[data-testid="stNumberInput"] > label,
+    /* Label do st.file_uploader */
+    div[data-testid="stFileUploader"] > label,
+    /* Label do st.checkbox */
+    div[data-testid="stCheckbox"] label {
+        color: #fff !important;
+        font-weight: 800 !important;
+        font-size: 1.12rem !important;
         letter-spacing: 0.01em;
-        text-shadow: 0 1px 6px #2228;
-        margin-bottom: 3px !important;
+        text-shadow: 0 1px 5px #2227;
+        margin-bottom: 4px !important;
         margin-top: 0.8em !important;
     }
-    /* ====== FIM DO AJUSTE ====== */
+    /* ====== FIM DO NOVO AJUSTE ====== */
 </style>
 """, unsafe_allow_html=True)
 
@@ -105,7 +104,6 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 ABR_DIAS_PT = ["SEG", "TER", "QUA", "QUI", "SEX", "SAB", "DOM"]
-
 MESES_PT = {
     "January": "JANEIRO", "February": "FEVEREIRO", "March": "MARÇO", "April": "ABRIL",
     "May": "MAIO", "June": "JUNHO", "July": "JULHO", "August": "AGOSTO",
@@ -129,22 +127,16 @@ if uploaded_file:
         for i, page in enumerate(pdf.pages):
             texto = page.extract_text() or ""
             linhas = texto.split('\n')
-            # Captura todas as datas no formato dd/mm/aa
             datas = [datetime.strptime(data, '%d/%m/%y') for linha in linhas for data in re.findall(r'\d{2}/\d{2}/\d{2}', linha)]
-            
-            # Define a última data da página, se houver
             if datas:
                 ultima_data = max(datas)
-
             for linha in linhas:
                 if re.match(r'^\d{2}/\d{2}/\d{2}', linha):
                     data_str = linha[:8]
                     dia_semana = dia_da_semana(data_str)
-
                     horarios = re.findall(r'\d{2}:\d{2}', linha)
                     if not horarios or len(horarios) < 2:
                         continue
-
                     valores = re.findall(r'\d+,\d+', linha)
                     try:
                         a01 = float(valores[0].replace(",", "."))
@@ -152,7 +144,6 @@ if uploaded_file:
                             dias_excedidos.append((f"{data_str} {dia_semana}", a01, ultima_data, i+1))
                     except:
                         pass
-
                     if verificar_identicos:
                         pares = list(zip(horarios[::2], horarios[1::2]))
                         for entrada, saida in pares:
