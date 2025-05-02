@@ -77,7 +77,7 @@ st.markdown("""
         box-shadow: 0 2px 8px #00000022;
         border-radius: 8px;
         margin-bottom: 10px;
-        font-size: 12px;
+        font-size: 16px;
         border-left: 8px solid #d4af37;
     }
     .result-block.ok {
@@ -93,13 +93,13 @@ st.markdown("""
     .header-gold {
         color: #d4af37 !important;
         font-weight: 900;
-        font-size: 1.5rem !important;
-        margin-top: 1em;
-        margin-bottom: 0.5em;
+        font-size: 2.1rem !important;
+        margin-top: 1.5em;
+        margin-bottom: 1.1em;
         letter-spacing: 0.01em;
         text-shadow: 0 1px 12px #00000022, 0 0px 14px #d4af373A;
         font-family: 'Roboto', sans-serif !important;
-        line-height: 1;
+        line-height: 1.1;
         text-align: left;
     }
 </style>
