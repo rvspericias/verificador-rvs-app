@@ -10,41 +10,42 @@ GOLD_GRADIENT = "linear-gradient(90deg, #FFC600, #A68000)"
 TEXT_COLOR = "#FFFFFF"
 SECONDARY_TEXT_COLOR = "#D3D3D3"
 
-# Aplicando CSS
+# CSS
 st.write(f"""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
-        /* Configurações Globais */
         * {{
             font-family: 'Poppins', sans-serif;
         }}
         body {{
             background-color: {BACKGROUND_COLOR};
         }}
-
         .block-container {{
             background-color: {PANEL_COLOR};
             padding: 20px 30px;
             border-radius: 12px;
             box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.4);
         }}
-
-        /* Títulos principais */
+        .logo-center {{
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            margin-top: 28px; 
+            margin-bottom: 8px;
+        }}
         .title {{
             color: {GOLD_COLOR};
             font-size: 24px;
             font-weight: 700;
             text-align: center;
-            margin-top: 20px;
+            margin-top: 10px;
         }}
         .subtitle {{
             color: {SECONDARY_TEXT_COLOR};
             font-size: 18px;
             text-align: center;
         }}
-
-        /* Botões */
         .stButton>button {{
             background: {GOLD_GRADIENT};
             color: {TEXT_COLOR};
@@ -60,8 +61,6 @@ st.write(f"""
             background: #FFD465;
             color: black;
         }}
-
-        /* Campos de Entrada */
         .stTextInput>div>div>input, .stNumberInput>div>div>input {{
             background-color: {PANEL_COLOR};
             color: {TEXT_COLOR};
@@ -79,7 +78,17 @@ st.write(f"""
     </style>
 """, unsafe_allow_html=True)
 
-# Layout
+# Logo centralizada
+st.markdown(
+    """
+    <div class='logo-center'>
+        <img src='https://raw.githubusercontent.com/rvspericias/verificador-rvs-app/refs/heads/main/logo-min-flat.png' 
+        alt='Logo RVS' width='130'/>
+    </div>
+    """, unsafe_allow_html=True
+)
+
+# Títulos e layout
 st.markdown("<h1 class='title'>RVS PERÍCIAS</h1>", unsafe_allow_html=True)
 st.markdown("<h2 class='subtitle'>Verificador de Jornada de Trabalho</h2>", unsafe_allow_html=True)
 st.write("---")
