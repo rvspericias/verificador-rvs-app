@@ -38,15 +38,13 @@ st.markdown("""
     }
     /* Checkbox com check VERDE */
     section[data-testid="stCheckbox"] svg {
-        stroke: #27d154 !important; /* Deixe #27d154 para verde forte, ou troque por #4b9df9 para azul */
-        fill: #27d154 !important; /* Troque por #4b9df9 para azul */
-        /* Para azul descomente a linha abaixo e comente as linhas acima */
-        /* stroke: #4b9df9 !important; fill: #4b9df9 !important; */
-        filter: drop-shadow(0 0 3px #27d15488); /* Opcional: glow ao redor do check */
+        stroke: #27d154 !important;
+        fill: #27d154 !important;
+        filter: drop-shadow(0 0 3px #27d15488);
     }
     section[data-testid="stCheckbox"]:hover svg {
-        stroke: #39ef74 !important; /* Ou #3ba1fa para azul-claro no hover */
-        fill: #39ef74 !important;   /* Ou #3ba1fa para azul-claro no hover */
+        stroke: #39ef74 !important;
+        fill: #39ef74 !important;
     }
     .stMarkdown h1 {
         color: #fafafa !important;
@@ -90,6 +88,19 @@ st.markdown("""
         border-left: 8px solid #468cfb;
         background: #e8f1fc;
         color: #163a67;
+    }
+    /* Header dourado destacado */
+    .header-gold {
+        color: #d4af37 !important;
+        font-weight: 900;
+        font-size: 2.1rem !important;
+        margin-top: 1.5em;
+        margin-bottom: 1.1em;
+        letter-spacing: 0.01em;
+        text-shadow: 0 1px 12px #00000022, 0 0px 14px #d4af373A;
+        font-family: 'Roboto', sans-serif !important;
+        line-height: 1.1;
+        text-align: left;
     }
 </style>
 """, unsafe_allow_html=True)
