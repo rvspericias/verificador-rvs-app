@@ -1,4 +1,3 @@
-
 import streamlit as st
 import pdfplumber
 import re
@@ -131,7 +130,7 @@ if uploaded_file:
                             if entrada == saida:
                                 registros_iguais.append((data_str, entrada, page_num))
             elif formato == "formato_2":
-                # Segundo formato (TOTAL)
+                # Segundo formato (TOTAL) - Ajuste para capturar o TOTAL no final da linha
                 for linha in linhas:
                     match_data = re.match(r'(\d{2}/\d{2}/\d{2})', linha)
                     if match_data:
@@ -141,7 +140,7 @@ if uploaded_file:
                         if len(horarios) < 2:
                             continue
                         
-                        # Alteração para capturar o "TOTAL"
+                        # Agora ajustamos a captura da coluna "TOTAL" corretamente
                         valores = re.findall(r'\d+,\d+', linha)
                         if valores:
                             total = float(valores[-1].replace(",", "."))  # Coluna "TOTAL"
