@@ -93,7 +93,7 @@ st.markdown("""
     .header-gold {
         color: #d4af37 !important;
         font-weight: 900;
-        font-size: 2.1rem !important;
+        font-size: 1.8rem !important;
         margin-top: 1em;
         margin-bottom: 1em;
         letter-spacing: 0.01em;
