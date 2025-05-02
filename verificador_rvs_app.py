@@ -161,7 +161,24 @@ if uploaded_file:
                             if entrada == saida:
                                 registros_iguais.append((f"{data_str} {dia_semana}", f"{entrada} - {saida}", mes_ref, i+1))
 
-    st.markdown('<div class="header-gold">Resultado da Verificação</div>', unsafe_allow_html=True)
+    import streamlit as st
+
+# Defina o seu CSS personalizado
+st.markdown("""
+    <style>
+        .header-gold {
+            font-size: 24px;
+            font-weight: bold;
+            color: gold;
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
+# Use a classe personalizada para o título
+st.markdown('<div class="header-gold">Resultado da Verificação</div>', unsafe_allow_html=True)
+
 
     if dias_excedidos:
         st.write("### Dias com mais horas que o limite:")
