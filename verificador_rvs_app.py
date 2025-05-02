@@ -77,22 +77,19 @@ st.markdown("""
         margin-bottom: 0.8em;
     }
 
-    /* ====== NOVO: LEGIBILIDADE DAS LABELS DOS INPUTS ====== */
-    /* Label do st.number_input */
+    /* ====== ESTILIZAÇÃO DOS LABELS ====== */
+    /* Widgets (e.g. NumberInput, Checkbox, FileUploader) */
     div[data-testid="stNumberInput"] > label,
-    /* Label do st.file_uploader */
     div[data-testid="stFileUploader"] > label,
-    /* Label do st.checkbox */
-    div[data-testid="stCheckbox"] label {
-        color: #fff !important;
-        font-weight: 800 !important;
-        font-size: 1.12rem !important;
-        letter-spacing: 0.01em;
-        text-shadow: 0 1px 5px #2227;
-        margin-bottom: 4px !important;
-        margin-top: 0.8em !important;
+    div[data-testid="stCheckbox"] > label {
+        color: #d4af37 !important; /* Cor dourada */
+        font-weight: 700 !important; /* Fonte em bold */
+        font-size: 1.1rem !important; /* Levemente maior */
+        letter-spacing: 0.02em;
+        text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6); /* Sombra discreta */
+        margin-bottom: 6px !important;
     }
-    /* ====== FIM DO NOVO AJUSTE ====== */
+    /* ====== FIM ESTILIZAÇÃO DOS LABELS ====== */
 </style>
 """, unsafe_allow_html=True)
 
