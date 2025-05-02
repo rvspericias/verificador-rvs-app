@@ -3,6 +3,7 @@ import pdfplumber
 import re
 from io import BytesIO
 from datetime import datetime
+import calendar  # Para exibição do dia da semana
 
 st.set_page_config(
     page_title="Verificador RVS",
@@ -36,22 +37,13 @@ st.markdown("""
     .stButton>button:hover {
         background-color: #edc84c;
     }
-    /* Checkbox com check VERDE */
-    section[data-testid="stCheckbox"] svg {
-        stroke: #27d154 !important; /* Deixe #27d154 para verde forte, ou troque por #4b9df9 para azul */
-        fill: #27d154 !important; /* Troque por #4b9df9 para azul */
-        /* Para azul descomente a linha abaixo e comente as linhas acima */
-        /* stroke: #4b9df9 !important; fill: #4b9df9 !important; */
-        filter: drop-shadow(0 0 3px #27d15488); /* Opcional: glow ao redor do check */
-    }
-    section[data-testid="stCheckbox"]:hover svg {
-        stroke: #39ef74 !important; /* Ou #3ba1fa para azul-claro no hover */
-        fill: #39ef74 !important;   /* Ou #3ba1fa para azul-claro no hover */
-    }
-    .stMarkdown h1 {
-        color: #fafafa !important;
-        font-size: 2.5rem;
-        font-weight: 800;
+    /* Exibir 'Resultado da Verificação' com o tom dourado */
+    .header-gold {
+        color: #d4af37 !important;
+        font-weight: 700;
+        font-size: 1.5rem;
+        margin-top: 1.5em;
+        margin-bottom: 1em;
     }
     .stMarkdown h2, h4 {
         color: #e4e4e4 !important;
@@ -62,32 +54,24 @@ st.markdown("""
         color: #c7c7c7 !important;
         font-size: 17px;
     }
-    /* Mira SVG ao topo dos resultados */
-    .sniper-wrap {
-        width:100%%; display:flex; justify-content: center; margin-bottom: 14px;
-    }
-    .sniper-svg {
-        width: 62px; height: 62px; display: block;
-        filter: drop-shadow(0 2px 7px #224a85a0);
-    }
 
-    /* Resultados: Estilo clean com fundo claro */
+    /* Bordas das caixas de resultado - mais espessas e destacadas */
     .result-block {
         background: #f7f7f8;
         color: #21242B;
         padding: 12px 14px;
-        box-shadow: 0 2px 8px #00000022;
+        box-shadow: 0 2px 8px #0003;
         border-radius: 8px;
         margin-bottom: 10px;
         font-size: 16px;
-        border-left: 4px solid #d4af37;
+        border-left: 6px solid #d4af37; /* Dourado mais espesso */
     }
     .result-block.ok {
-        border-left: 4px solid #27d154;
+        border-left: 6px solid #27d154;
         color: #1b3c24;
     }
     .result-block.none {
-        border-left: 4px solid #468cfb;
+        border-left: 6px solid #468cfb;
         background: #e8f1fc;
         color: #163a67;
     }
@@ -101,6 +85,12 @@ st.markdown("""
 <p>Automatize a conferência de jornadas com base nos arquivos PDF de contagem</p>
 """, unsafe_allow_html=True)
 
+# Função auxiliar para converter data em dia da semana
+def dia_da_semana(data_str):
+    data = datetime.strptime(data_str, '%d/%m/%y')
+    return calendar.day_abbr[data.weekday()].upper()  # Retorna abreviação em 3 letras (e.g., SEG, TER)
+
+# Dicionário de meses em português
 MESES_PT = {
     1: 'JANEIRO', 2: 'FEVEREIRO', 3: 'MARÇO', 4: 'ABRIL',
     5: 'MAIO', 6: 'JUNHO', 7: 'JULHO', 8: 'AGOSTO',
@@ -122,7 +112,7 @@ if uploaded_file:
         for i, page in enumerate(pdf.pages):
             texto = page.extract_text() or ""
             linhas = texto.split('\n')
-            datas = [re.findall(r'(\d{2}/\d{2}/\d{4})', linha) for linha in linhas if re.search(r'\d{2}/\d{2}/\d{4}', linha)]
+            datas = [re.findall(r'(\d{2}/\d{2}/\d{2})', linha) for linha in linhas if re.search(r'\d{2}/\d{2}/\d{2}', linha)]
             datas = [item for sublist in datas for item in sublist]
 
             try:
@@ -133,6 +123,10 @@ if uploaded_file:
 
             for linha in linhas:
                 if re.match(r'^\d{2}/\d{2}/\d{2}', linha):
+                    # Capturar data no formato correto + dia da semana
+                    data_str = linha[:8]  # Primeiro padrão: "dd/mm/aa"
+                    dia_semana = dia_da_semana(data_str)
+
                     horarios = re.findall(r'\d{2}:\d{2}', linha)
                     if not horarios or len(horarios) < 2:
                         continue
@@ -141,7 +135,8 @@ if uploaded_file:
                     try:
                         a01 = float(valores[0].replace(",", "."))
                         if a01 > limite:
-                            dias_excedidos.append((linha[:10], a01, mes_ref, i+1))
+                            # Adicionar dia da semana na saída final
+                            dias_excedidos.append((f"{data_str} {dia_semana}", a01, mes_ref, i+1))
                     except:
                         pass
 
@@ -149,25 +144,10 @@ if uploaded_file:
                         pares = list(zip(horarios[::2], horarios[1::2]))
                         for entrada, saida in pares:
                             if entrada == saida:
-                                registros_iguais.append((linha[:10], f"{entrada} - {saida}", mes_ref, i+1))
+                                registros_iguais.append((f"{data_str} {dia_semana}", f"{entrada} - {saida}", mes_ref, i+1))
 
-    # --- Bloco da mira SVG ---
-    st.markdown("""
-    <div class="sniper-wrap">
-      <svg class="sniper-svg" viewBox="0 0 64 64" fill="none">
-        <circle cx="32" cy="32" r="31" stroke="#d4af37" stroke-width="2.2"/>
-        <circle cx="32" cy="32" r="19" stroke="#468cfb" stroke-width="2.2"/>
-        <circle cx="32" cy="32" r="6"  stroke="#27d154" stroke-width="2.2"/>
-        <line x1="32" y1="3" x2="32" y2="14" stroke="#e63d3d" stroke-width="2"/>
-        <line x1="32" y1="50" x2="32" y2="61" stroke="#2e3192" stroke-width="2"/>
-        <line x1="3" y1="32" x2="14" y2="32" stroke="#2e3192" stroke-width="2"/>
-        <line x1="50" y1="32" x2="61" y2="32" stroke="#27d154" stroke-width="2"/>
-        <circle cx="32" cy="32" r="2" fill="#21242B" stroke="#27d154" stroke-width="1.2"/>
-      </svg>
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.subheader("Resultado da Verificação")
+    # Exibir os resultados
+    st.markdown('<div class="header-gold">Resultado da Verificação</div>', unsafe_allow_html=True)
 
     if dias_excedidos:
         st.write("### Dias com mais horas que o limite:")
