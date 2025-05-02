@@ -63,8 +63,8 @@ if uploaded_file:
             if not texto:
                 continue
             linhas = texto.split('\n')
-            mes_ref = next((re.search(r'(JANEIRO|FEVEREIRO|MARÇO|ABRIL|MAIO|JUNHO|JULHO|AGOSTO|SETEMBRO|OUTUBRO|NOVEMBRO|DEZEMBRO)/\d{4}', l)
-                           for l in linhas if re.search(r'/\d{4}', l)), None)
+            mes_ref = next((re.search(r'(JANEIRO|FEVEREIRO|MARÇO|ABRIL|MAIO|JUNHO|JULHO|AGOSTO|SETEMBRO|OUTUBRO|NOVEMBRO|DEZEMBRO)/\d{4}', l) 
+                for l in linhas), None)
             mes_ref = mes_ref.group(0) if mes_ref else "Mês Desconhecido"
 
             for linha in linhas:
