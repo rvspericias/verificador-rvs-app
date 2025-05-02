@@ -4,6 +4,7 @@ import re
 from datetime import datetime
 from io import BytesIO
 
+# Configuração da página do Streamlit
 st.set_page_config(
     page_title="Verificador RVS",
     page_icon="https://raw.githubusercontent.com/carlosrvs/verificador-rvs-app/main/logo-min-flat.png",
@@ -65,6 +66,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# Logo e título
 st.image("https://raw.githubusercontent.com/rvspericias/verificador-rvs-app/refs/heads/main/logo-min-flat.png", width=110)
 st.markdown("""
 <h1 style='color: #ffffff;'>Verificador <span style="color: #d4af37;">RVS</span></h1>
@@ -83,6 +85,7 @@ DIA_ABREV = {
     4: "SEX", 5: "SAB", 6: "DOM"
 }
 
+# Configuração de limite de horas
 limite = st.number_input("Limite máximo de horas por dia (ex: 17.00)", min_value=0.0, max_value=24.0, value=17.00, step=0.25)
 uploaded_file = st.file_uploader("Envie o PDF da contagem", type=["pdf"])
 
@@ -94,24 +97,34 @@ if uploaded_file:
         for page_num, page in enumerate(pdf.pages, start=1):
             texto = page.extract_text() or ""
             linhas = texto.split('\n')
+            
             for linha in linhas:
-                if re.match(r'^\d{2}/\d{2}/\d{2}', linha):
-                    data_str = linha[:8]
+                # Ajustando regex para capturar datas no formato dd/mm/yy
+                match_data = re.match(r'(\d{2}/\d{2}/\d{2})', linha)
+                if match_data:
+                    data_str = match_data.group(1)
+                    # Capturando os horários de entrada e saída (e tratando separação de horários)
                     horarios = re.findall(r'\d{2}:\d{2}', linha)
-                    if len(horarios) < 2:
+                    
+                    if len(horarios) < 2:  # Caso não haja entradas e saídas, ignorar
                         continue
+                    
                     valores = re.findall(r'\d+,\d+', linha)
-                    a01 = float(valores[0].replace(",", ".")) if valores else 0
+                    a01 = float(valores[0].replace(",", ".")) if valores else 0  # A01, a contagem de horas
+                    
                     if a01 > limite:
-                        dias_excedidos.append((data_str, a01, page_num))
-                    pares = list(zip(horarios[::2], horarios[1::2]))
+                        dias_excedidos.append((data_str, a01, page_num))  # Adicionando dia com horas excessivas
+                    
+                    pares = list(zip(horarios[::2], horarios[1::2]))  # Pares de entrada/saída
                     for entrada, saida in pares:
                         if entrada == saida:
-                            registros_iguais.append((data_str, entrada, page_num))
+                            registros_iguais.append((data_str, entrada, page_num))  # Adicionando entradas iguais
 
+    # Exibir os resultados (dias e registros)
     st.markdown('<h2 class="result-header">Resultado da Verificação</h2>', unsafe_allow_html=True)
+    
+    # Exibir dias excedidos
     st.markdown('<h3 class="subtitle">Dias com mais horas que o limite:</h3>', unsafe_allow_html=True)
-
     if dias_excedidos:
         for data, horas, pagina in dias_excedidos:
             dia, mes, ano = data.split('/')
@@ -132,8 +145,8 @@ if uploaded_file:
             unsafe_allow_html=True
         )
 
+    # Exibir registros idênticos
     st.markdown('<h3 class="subtitle">Registros de entrada/saída idênticos:</h3>', unsafe_allow_html=True)
-
     if registros_iguais:
         for data, registro, pagina in registros_iguais:
             dia, mes, ano = data.split('/')
