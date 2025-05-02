@@ -3,6 +3,7 @@ import streamlit as st
 import pdfplumber
 import re
 from io import BytesIO
+from datetime import datetime
 
 st.set_page_config(
     page_title="Verificador RVS",
@@ -36,12 +37,19 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-st.image("https://raw.githubusercontent.com/carlosrvs/verificador-rvs-app/main/logo-min-flat.png", width=100)
+st.image("https://raw.githubusercontent.com/rvspericias/verificador-rvs-app/refs/heads/main/logo-min-flat.png", width=100)
 
 st.markdown("""
 <h1 style='font-family: Roboto; font-size: 42px; color: #222; margin-bottom: 0;'>Verificador <span style='color:#d4af37;'>RVS</span></h1>
 <p style='font-family: Roboto; font-size: 18px; color: #555; margin-top: 0;'>Automatize a conferência de jornadas com base nos arquivos PDF de contagem</p>
 """, unsafe_allow_html=True)
+
+# Dicionário de meses em português
+MESES_PT = {
+    1: 'JANEIRO', 2: 'FEVEREIRO', 3: 'MARÇO', 4: 'ABRIL',
+    5: 'MAIO', 6: 'JUNHO', 7: 'JULHO', 8: 'AGOSTO',
+    9: 'SETEMBRO', 10: 'OUTUBRO', 11: 'NOVEMBRO', 12: 'DEZEMBRO'
+}
 
 limite = st.number_input("Limite máximo de horas por dia (ex: 17.00)", min_value=0.0, max_value=24.0, value=17.00, step=0.25, format="%0.2f")
 verificar_identicos = st.checkbox("Verificar registros de entrada/saída idênticos", value=True)
@@ -58,14 +66,20 @@ if uploaded_file:
     registros_iguais = []
 
     with pdfplumber.open(BytesIO(uploaded_file.read())) as pdf:
-        for page in pdf.pages:
+        for i, page in enumerate(pdf.pages):
             texto = page.extract_text()
             if not texto:
                 continue
+
             linhas = texto.split('\n')
-            mes_ref = next((re.search(r'(JANEIRO|FEVEREIRO|MARÇO|ABRIL|MAIO|JUNHO|JULHO|AGOSTO|SETEMBRO|OUTUBRO|NOVEMBRO|DEZEMBRO)/\d{4}', l)
-                           for l in linhas if re.search(r'/\d{4}', l)), None)
-            mes_ref = mes_ref.group(0) if mes_ref else "Mês Desconhecido"
+            datas = [re.findall(r'(\d{2}/\d{2}/\d{4})', linha) for linha in linhas if re.search(r'\d{2}/\d{2}/\d{4}', linha)]
+            datas = [item for sublist in datas for item in sublist]
+
+            try:
+                data_final = max(datetime.strptime(d, '%d/%m/%Y') for d in datas)
+                mes_ref = f"{MESES_PT[data_final.month]}/{data_final.year}"
+            except:
+                mes_ref = "Mês Desconhecido"
 
             for linha in linhas:
                 if re.match(r'^\d{2}/\d{2}/\d{2}', linha):
@@ -76,7 +90,7 @@ if uploaded_file:
                     try:
                         a01 = float(valores[0].replace(",", "."))
                         if a01 > limite:
-                            dias_excedidos.append((linha[:8], a01, mes_ref))
+                            dias_excedidos.append((linha[:8], a01, mes_ref, i+1))
                     except:
                         pass
 
@@ -84,7 +98,7 @@ if uploaded_file:
                         pares = list(zip(horarios[::2], horarios[1::2]))
                         for ent, sai in pares:
                             if ent == sai:
-                                registros_iguais.append((linha[:8], f"{ent} - {sai}", mes_ref))
+                                registros_iguais.append((linha[:8], f"{ent} - {sai}", mes_ref, i+1))
 
     st.markdown("---")
     st.subheader("Resultado da Verificação")
@@ -94,11 +108,15 @@ if uploaded_file:
         for d in dias_excedidos:
             st.markdown(f"""
             <div style='background:#fff8dc; padding:10px; border-left:5px solid #d4af37; margin-bottom:8px;'>
-                <strong>{d[0]}</strong> | {d[1]}h | {d[2]}
+                <strong>{d[0]}</strong> | {d[1]} | {d[2]} | Página {d[3]}
             </div>
             """, unsafe_allow_html=True)
     else:
-        st.success("Nenhum dia excedeu o limite de horas.")
+        st.markdown("""
+        <div style='background:#e6f4ea; padding:10px; border-left:5px solid #2e7d32; margin-bottom:8px;'>
+            <strong>Nenhum dia excedeu o limite de horas.</strong>
+        </div>
+        """, unsafe_allow_html=True)
 
     if verificar_identicos:
         if registros_iguais:
@@ -106,8 +124,12 @@ if uploaded_file:
             for r in registros_iguais:
                 st.markdown(f"""
                 <div style='background:#f8f9fa; padding:10px; border-left:5px solid #888; margin-bottom:8px;'>
-                    <strong>{r[0]}</strong> | {r[1]} | {r[2]}
+                    <strong>{r[0]}</strong> | {r[1]} | {r[2]} | Página {r[3]}
                 </div>
                 """, unsafe_allow_html=True)
         else:
-            st.info("Nenhum registro idêntico encontrado.")
+            st.markdown("""
+            <div style='background:#e8f0fe; padding:10px; border-left:5px solid #4285f4; margin-bottom:8px;'>
+                Nenhum registro idêntico encontrado.
+            </div>
+            """, unsafe_allow_html=True)
