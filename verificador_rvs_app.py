@@ -80,14 +80,14 @@ st.markdown("""
         border-radius: 8px;
         margin-bottom: 10px;
         font-size: 16px;
-        border-left: 4px solid #d4af37;
+        border-left: 8px solid #d4af37;
     }
     .result-block.ok {
-        border-left: 4px solid #27d154;
+        border-left: 8px solid #27d154;
         color: #1b3c24;
     }
     .result-block.none {
-        border-left: 4px solid #468cfb;
+        border-left: 8px solid #468cfb;
         background: #e8f1fc;
         color: #163a67;
     }
