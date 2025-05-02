@@ -58,7 +58,7 @@ st.markdown("""
 # Título e descrição
 st.image("https://raw.githubusercontent.com/rvspericias/verificador-rvs-app/refs/heads/main/logo-min-flat.png", width=110)
 st.markdown("""
-<h1 style='color: #d4af37;'>Verificador <span style="color: #d4af37;">RVS</span></h1>
+<h1 style='color: #d4af37;'>Verificador <span style="color: #d4af37;">RVS</span></h2>
 <p>Automatize a conferência de jornadas com base nos arquivos PDF de contagem.</p>
 """, unsafe_allow_html=True)
 
@@ -99,7 +99,7 @@ if uploaded_file:
     st.markdown('<h2 class="subtitle">Resultado da Verificação</h2>', unsafe_allow_html=True)
 
     # Dias que excedem o limite
-    st.markdown('<h3 class="subtitle">Dias com mais horas que o limite:</h3>', unsafe_allow_html=True)
+    st.markdown('<h3 class="subtitle">Dias com mais horas que o limite:</h4>', unsafe_allow_html=True)
     if dias_excedidos:
         for d in dias_excedidos:
             st.markdown(
@@ -113,7 +113,7 @@ if uploaded_file:
         )
 
     # Registros idênticos de entrada/saída
-    st.markdown('<h3 class="subtitle">Registros de entrada/saída idênticos:</h3>', unsafe_allow_html=True)
+    st.markdown('<h3 class="subtitle">Registros de entrada/saída idênticos:</h4>', unsafe_allow_html=True)
     if registros_iguais:
         for r in registros_iguais:
             st.markdown(
