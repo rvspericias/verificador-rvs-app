@@ -101,13 +101,10 @@ st.markdown("""
 <p>Automatize a conferência de jornadas com base nos arquivos PDF de contagem</p>
 """, unsafe_allow_html=True)
 
-# Abreviações dos dias da semana em PT-BR
-ABR_DIAS_PT = ["SEG", "TER", "QUA", "QUI", "SEX", "SAB", "DOM"]
-
-# Função correta para data + sigla do dia em PT-BR
+# Função auxiliar para converter data em dia da semana
 def dia_da_semana(data_str):
-    d = datetime.strptime(data_str, '%d/%m/%y')
-    return ABR_DIAS_PT[d.weekday()]
+    data = datetime.strptime(data_str, '%d/%m/%y')
+    return calendar.day_abbr[data.weekday()].upper()  # Retorna abreviação em 3 letras (e.g., SEG, TER)
 
 # Dicionário de meses em português
 MESES_PT = {
@@ -142,7 +139,8 @@ if uploaded_file:
 
             for linha in linhas:
                 if re.match(r'^\d{2}/\d{2}/\d{2}', linha):
-                    data_str = linha[:8]
+                    # Capturar data no formato correto + dia da semana
+                    data_str = linha[:8]  # Primeiro padrão: "dd/mm/aa"
                     dia_semana = dia_da_semana(data_str)
 
                     horarios = re.findall(r'\d{2}:\d{2}', linha)
@@ -153,6 +151,7 @@ if uploaded_file:
                     try:
                         a01 = float(valores[0].replace(",", "."))
                         if a01 > limite:
+                            # Adicionar dia da semana na saída final
                             dias_excedidos.append((f"{data_str} {dia_semana}", a01, mes_ref, i+1))
                     except:
                         pass
@@ -162,6 +161,7 @@ if uploaded_file:
                         for entrada, saida in pares:
                             if entrada == saida:
                                 registros_iguais.append((f"{data_str} {dia_semana}", f"{entrada} - {saida}", mes_ref, i+1))
+
 
     st.markdown('<div class="header-gold">Resultado da Verificação</div>', unsafe_allow_html=True)
 
