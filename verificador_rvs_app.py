@@ -13,24 +13,7 @@ st.set_page_config(
 
 st.markdown("""
 <style>
-    /* Fundo da página */
-    .stApp {
-        background-color: #eaeaea; /* Cinza elegante */
-    }
-
-    /* Estilo do checkbox */
-    [data-baseweb="checkbox"] > div:first-child {
-        border: 2px solid #27d154; /* Borda verde */
-    }
-    [data-baseweb="checkbox"] > div:first-child[data-checked="true"] {
-        background-color: #27d154; /* Fundo verde quando marcado */
-        border-color: #27d154; /* Borda permanece verde quando marcado */
-    }
-    [data-baseweb="checkbox"] > div:first-child:hover {
-        border-color: #1e993c; /* Borda verde escuro ao passar o mouse */
-    }
-
-    /* Estilo personalizado adicional */
+    /* ... (todo o CSS igual ao anterior, pode colar por cima) ... */
     .header-gold {
         color: #d4af37 !important;
         font-weight: 700;
@@ -60,7 +43,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-st.image("https://raw.githubusercontent.com/rvspericias/verificador-rvs-app/main/logo-min-flat.png", width=110)
+st.image("https://raw.githubusercontent.com/rvspericias/verificador-rvs-app/refs/heads/main/logo-min-flat.png", width=110)
 
 st.markdown("""
 <h1>Verificador <span style='color:#d4af37;'>RVS</span></h1>
@@ -135,7 +118,7 @@ if uploaded_file:
         st.write("### Dias com mais horas que o limite:")
         for d in dias_excedidos:
             st.markdown(
-                f"<div class='result-block'><strong>{d[0]}</strong> | {d[1]:.2f} horas | {d[2]} | Página {d[3]}</div>",
+                f"<div class='result-block'><strong>{d[0]}</strong> | {d[1]} | {d[2]} | Página {d[3]}</div>",
                 unsafe_allow_html=True
             )
     else:
