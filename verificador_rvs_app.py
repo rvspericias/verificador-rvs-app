@@ -16,7 +16,7 @@ st.markdown("""
 
     html, body, [class*="css"]  {
         font-family: 'Roboto', sans-serif;
-        background-color: #fdfdfd;
+        background-color: #ffffff;
         color: #222222;
     }
 
@@ -32,15 +32,6 @@ st.markdown("""
 
     .stButton>button:hover {
         background-color: #c49d2e;
-    }
-
-    .result-card {
-        background: #fff;
-        padding: 12px 20px;
-        margin-bottom: 10px;
-        border-radius: 10px;
-        border-left: 6px solid #d4af37;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
     }
 </style>
 """, unsafe_allow_html=True)
@@ -67,20 +58,15 @@ if uploaded_file:
     registros_iguais = []
 
     with pdfplumber.open(BytesIO(uploaded_file.read())) as pdf:
-        mes_ref = "Mês Desconhecido"
-        for page in pdf.pages:
+        for idx, page in enumerate(pdf.pages):
             texto = page.extract_text()
             if not texto:
                 continue
 
             linhas = texto.split('\n')
-
-            # Tenta encontrar mês de referência da página
-            for linha in linhas:
-                match_mes = re.search(r'(JANEIRO|FEVEREIRO|MARÇO|ABRIL|MAIO|JUNHO|JULHO|AGOSTO|SETEMBRO|OUTUBRO|NOVEMBRO|DEZEMBRO)/\d{4}', linha.upper())
-                if match_mes:
-                    mes_ref = match_mes.group(0)
-                    break
+            mes_ref = next((re.search(r'(JANEIRO|FEVEREIRO|MARÇO|ABRIL|MAIO|JUNHO|JULHO|AGOSTO|SETEMBRO|OUTUBRO|NOVEMBRO|DEZEMBRO)/\d{4}', l)
+                            for l in linhas), None)
+            mes_ref = mes_ref.group(0) if mes_ref else "Mês Desconhecido"
 
             for linha in linhas:
                 if re.match(r'^\d{2}/\d{2}/\d{2}', linha):
@@ -91,7 +77,7 @@ if uploaded_file:
                     try:
                         a01 = float(valores[0].replace(",", "."))
                         if a01 > limite:
-                            dias_excedidos.append((linha[:8], a01, mes_ref))
+                            dias_excedidos.append((linha[:8], a01, mes_ref, idx + 1))
                     except:
                         pass
 
@@ -99,42 +85,34 @@ if uploaded_file:
                         pares = list(zip(horarios[::2], horarios[1::2]))
                         for ent, sai in pares:
                             if ent == sai:
-                                registros_iguais.append((linha[:8], f"{ent} - {sai}", mes_ref))
+                                registros_iguais.append((linha[:8], f"{ent} - {sai}", mes_ref, idx + 1))
 
     st.markdown("---")
     st.subheader("Resultado da Verificação")
 
     if dias_excedidos:
-        st.markdown("""
-        <h4 style='font-family: Roboto; color: #222;'>Dias com mais horas que o limite:</h4>
-        """, unsafe_allow_html=True)
+        st.write("### Dias com mais horas que o limite:")
         for d in dias_excedidos:
             st.markdown(f"""
-            <div class='result-card'>
-                <strong>{d[0]}</strong> | {d[1]}h | {d[2]}
+            <div style='background:#fff8dc; padding:10px; border-left:5px solid #d4af37; margin-bottom:8px; border-radius:6px;'>
+                <strong>{d[0]}</strong> | {d[1]}h | {d[2]} | Página {d[3]}
             </div>
             """, unsafe_allow_html=True)
     else:
         st.markdown("""
-        <div style='background:#e6f4ea; padding:10px; border-left:5px solid #2e7d32; margin-bottom:8px; border-radius: 8px;'>
+        <div style='background:#e6f4ea; padding:10px; border-left:5px solid #2e7d32; margin-bottom:8px; border-radius:6px;'>
             <strong>Nenhum dia excedeu o limite de horas.</strong>
         </div>
         """, unsafe_allow_html=True)
 
     if verificar_identicos:
         if registros_iguais:
-            st.markdown("""
-            <h4 style='font-family: Roboto; color: #222;'>Registros com entrada/saída idênticos:</h4>
-            """, unsafe_allow_html=True)
+            st.write("### Registros com entrada/saída idênticos:")
             for r in registros_iguais:
                 st.markdown(f"""
-                <div style='background:#f8f9fa; padding:10px; border-left:5px solid #888; margin-bottom:8px; border-radius: 8px;'>
-                    <strong>{r[0]}</strong> | {r[1]} | {r[2]}
+                <div style='background:#f8f9fa; padding:10px; border-left:5px solid #888; margin-bottom:8px; border-radius:6px;'>
+                    <strong>{r[0]}</strong> | {r[1]} | {r[2]} | Página {r[3]}
                 </div>
                 """, unsafe_allow_html=True)
         else:
-            st.markdown("""
-            <div style='background:#e3f2fd; padding:10px; border-left:5px solid #2196f3; margin-bottom:8px; border-radius: 8px;'>
-                <strong>Nenhum registro idêntico encontrado.</strong>
-            </div>
-            """, unsafe_allow_html=True)
+            st.info("Nenhum registro idêntico encontrado.")
