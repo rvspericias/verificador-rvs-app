@@ -94,16 +94,40 @@ if uploaded_file:
         for page_num, page in enumerate(pdf.pages, start=1):
             texto = page.extract_text() or ""
             linhas = texto.split('\n')
+            
+            # Extrai o mês de referência do cabeçalho
+            mes_referencia = None
             for linha in linhas:
-                if re.match(r'^\d{2}/\d{2}/\d{2}', linha):
-                    data_str = linha[:8]
-                    horarios = re.findall(r'\d{2}:\d{2}', linha)
-                    if len(horarios) < 2:
+                if "MÊS:" in linha:
+                    mes_referencia_str = linha.split("MÊS:")[1].strip()
+                    try:
+                        mes, ano = mes_referencia_str.split('/')
+                        mes_referencia = f"{mes}/{ano}"
+                    except ValueError:
+                        st.error(f"Erro ao extrair o mês de referência da linha: {linha}")
                         continue
-                    valores = re.findall(r'\d+,\d+', linha)
+                    break
+
+            for linha in linhas:
+                # Ajusta a regex para corresponder ao novo formato
+                match = re.match(r'^(\d{2})[A-Z]{3}\s+(\d{1,2}:\d{2})', linha)
+                if match:
+                    dia = match.group(1)
+                    horarios = re.findall(r'\d{2}:\d{2}', linha)
+                    
+                    # Extrai o valor de A.01 ou Total
+                    valores = re.findall(r'(\d+,\d+)', linha)
                     a01 = float(valores[0].replace(",", ".")) if valores else 0
+                    
+                    # Formata a data com o mês de referência
+                    if mes_referencia:
+                        data_str = f"{dia}/{mes_referencia}"
+                    else:
+                        data_str = f"{dia}/??/????"  # Indica que o mês não foi encontrado
+
                     if a01 > limite:
                         dias_excedidos.append((data_str, a01, page_num))
+                    
                     pares = list(zip(horarios[::2], horarios[1::2]))
                     for entrada, saida in pares:
                         if entrada == saida:
@@ -116,12 +140,12 @@ if uploaded_file:
         for data, horas, pagina in dias_excedidos:
             dia, mes, ano = data.split('/')
             try:
-                dt_object = datetime.strptime(data, "%d/%m/%y")
+                dt_object = datetime.strptime(data, "%d/%m/%Y")
             except ValueError:
                 dt_object = None
             dia_semana = DIA_ABREV[dt_object.weekday()] if dt_object else "N/A"
             mes_extenso = MES_EXTENSO[mes]
-            ano_extenso = 2000 + int(ano) if int(ano) < 100 else int(ano)
+            ano_extenso = int(ano) if int(ano) < 100 else int(ano)
             st.markdown(
                 f"<div class='result-box exceeded'><strong>{data}</strong> | {dia_semana} | {horas:.2f} horas | {mes_extenso}/{ano_extenso} | Página {pagina} do PDF</div>",
                 unsafe_allow_html=True
@@ -138,12 +162,12 @@ if uploaded_file:
         for data, registro, pagina in registros_iguais:
             dia, mes, ano = data.split('/')
             try:
-                dt_object = datetime.strptime(data, "%d/%m/%y")
+                dt_object = datetime.strptime(data, "%d/%m/%Y")
             except ValueError:
                 dt_object = None
             dia_semana = DIA_ABREV[dt_object.weekday()] if dt_object else "N/A"
             mes_extenso = MES_EXTENSO[mes]
-            ano_extenso = 2000 + int(ano) if int(ano) < 100 else int(ano)
+            ano_extenso = int(ano) if int(ano) < 100 else int(ano)
             st.markdown(
                 f"<div class='result-box identical'><strong>{data}</strong> | {dia_semana} | {registro} | {mes_extenso}/{ano_extenso} | Página {pagina} do PDF</div>",
                 unsafe_allow_html=True
