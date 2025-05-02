@@ -11,55 +11,57 @@ def identificar_formato(texto):
     return 'antigo'
 
 # Função para extrair dados no formato antigo (A.01)
-def processar_antigo(texto, limite):
+def processar_antigo(texto, limite, pdf):
     dias_excedidos = []
     registros_iguais = []
-    linhas = texto.split('\n')
     page_num = 1  # Inicializa o contador de páginas
-    for linha in linhas:
-        if re.match(r'^\d{2}/\d{2}/\d{2}', linha):
-            data_str = linha[:8]
-            horarios = re.findall(r'\d{2}:\d{2}', linha)
-            if len(horarios) < 2:
-                continue
-            valores = re.findall(r'\d+,\d+', linha)
-            a01 = float(valores[0].replace(",", ".")) if valores else 0
-            if a01 > limite:
-                try:
-                    dt_object = datetime.strptime(data_str, "%d/%m/%y")
-                    dia_semana = ["SEG", "TER", "QUA", "QUI", "SEX", "SAB", "DOM"][dt_object.weekday()]
-                    dias_excedidos.append((data_str, dia_semana, a01, page_num))
-                except ValueError:
+    for page in pdf.pages:
+        linhas = page.extract_text().split('\n')
+        for linha in linhas:
+            if re.match(r'^\d{2}/\d{2}/\d{2}', linha):
+                data_str = linha[:8]
+                horarios = re.findall(r'\d{2}:\d{2}', linha)
+                if len(horarios) < 2:
                     continue
-            pares = list(zip(horarios[::2], horarios[1::2]))
-            for entrada, saida in pares:
-                if entrada == saida:
-                    registros_iguais.append((data_str, entrada))
+                valores = re.findall(r'\d+,\d+', linha)
+                a01 = float(valores[0].replace(",", ".")) if valores else 0
+                if a01 > limite:
+                    try:
+                        dt_object = datetime.strptime(data_str, "%d/%m/%y")
+                        dia_semana = ["SEG", "TER", "QUA", "QUI", "SEX", "SAB", "DOM"][dt_object.weekday()]
+                        dias_excedidos.append((data_str, dia_semana, a01, page_num))
+                    except ValueError:
+                        continue
+                pares = list(zip(horarios[::2], horarios[1::2]))
+                for entrada, saida in pares:
+                    if entrada == saida:
+                        registros_iguais.append((data_str, entrada))
         page_num += 1  # Incrementa o número da página após processar uma página
     return dias_excedidos, registros_iguais
 
 # Função para extrair dados no formato novo
-def processar_novo(texto, limite):
+def processar_novo(texto, limite, pdf):
     dias_excedidos = []
     registros_iguais = []
-    linhas = texto.split('\n')
     page_num = 1  # Inicializa o contador de páginas
-    for linha in linhas:
-        if re.match(r'^\d{2}', linha):
-            partes = linha.split()
-            data_str = partes[0]
-            try:
-                horas = float(partes[-1].replace(',', '.'))  # Captura o valor da coluna TOTAL
-            except ValueError:
-                continue
-            if horas > limite:
-                dias_excedidos.append((data_str, horas, page_num))
-            # Verificando registros de entrada/saída idênticos
-            horarios = re.findall(r'\d{2}:\d{2}', linha)
-            pares = list(zip(horarios[::2], horarios[1::2]))
-            for entrada, saida in pares:
-                if entrada == saida:
-                    registros_iguais.append((data_str, entrada))
+    for page in pdf.pages:
+        linhas = page.extract_text().split('\n')
+        for linha in linhas:
+            if re.match(r'^\d{2}', linha):
+                partes = linha.split()
+                data_str = partes[0]
+                try:
+                    horas = float(partes[-1].replace(',', '.'))  # Captura o valor da coluna TOTAL
+                except ValueError:
+                    continue
+                if horas > limite:
+                    dias_excedidos.append((data_str, horas, page_num))
+                # Verificando registros de entrada/saída idênticos
+                horarios = re.findall(r'\d{2}:\d{2}', linha)
+                pares = list(zip(horarios[::2], horarios[1::2]))
+                for entrada, saida in pares:
+                    if entrada == saida:
+                        registros_iguais.append((data_str, entrada))
         page_num += 1  # Incrementa o número da página após processar uma página
     return dias_excedidos, registros_iguais
 
@@ -139,16 +141,18 @@ uploaded_file = st.file_uploader("Envie o PDF da contagem", type=["pdf"])
 if uploaded_file:
     with pdfplumber.open(BytesIO(uploaded_file.read())) as pdf:
         texto = ""
-        for page_num, page in enumerate(pdf.pages, start=1):
+        # Passar o pdf inteiro para extração de texto
+        for page in pdf.pages:
             texto += page.extract_text() or ""
 
         # Identificar formato
         formato = identificar_formato(texto)
         
+        # Processamento conforme formato
         if formato == 'novo':
-            dias_excedidos, registros_iguais = processar_novo(texto, limite)
+            dias_excedidos, registros_iguais = processar_novo(texto, limite, pdf)
         else:
-            dias_excedidos, registros_iguais = processar_antigo(texto, limite)
+            dias_excedidos, registros_iguais = processar_antigo(texto, limite, pdf)
 
         st.markdown('<h2 class="result-header">Resultado da Verificação</h2>', unsafe_allow_html=True)
         
