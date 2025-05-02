@@ -36,16 +36,17 @@ st.markdown("""
     .stButton>button:hover {
         background-color: #edc84c;
     }
-    /* Checkbox com check verde */
+    /* Checkbox com check VERDE */
     section[data-testid="stCheckbox"] svg {
-        stroke: #27d154 !important;
-        filter: drop-shadow(0 0 3px #27d15488);
-        fill: #27d154 !important;
+        stroke: #27d154 !important; /* Deixe #27d154 para verde forte, ou troque por #4b9df9 para azul */
+        fill: #27d154 !important; /* Troque por #4b9df9 para azul */
+        /* Para azul descomente a linha abaixo e comente as linhas acima */
+        /* stroke: #4b9df9 !important; fill: #4b9df9 !important; */
+        filter: drop-shadow(0 0 3px #27d15488); /* Opcional: glow ao redor do check */
     }
     section[data-testid="stCheckbox"]:hover svg {
-        stroke: #39ef74 !important;
-        filter: drop-shadow(0 0 6px #39ef74cc);
-        fill: #39ef74 !important;
+        stroke: #39ef74 !important; /* Ou #3ba1fa para azul-claro no hover */
+        fill: #39ef74 !important;   /* Ou #3ba1fa para azul-claro no hover */
     }
     .stMarkdown h1 {
         color: #fafafa !important;
@@ -61,31 +62,38 @@ st.markdown("""
         color: #c7c7c7 !important;
         font-size: 17px;
     }
+    /* Mira SVG ao topo dos resultados */
+    .sniper-wrap {
+        width:100%%; display:flex; justify-content: center; margin-bottom: 14px;
+    }
+    .sniper-svg {
+        width: 62px; height: 62px; display: block;
+        filter: drop-shadow(0 2px 7px #224a85a0);
+    }
 
     /* Resultados: Estilo clean com fundo claro */
     .result-block {
-        background: #f7f7f8; /* Cinza bem claro */
+        background: #f7f7f8;
         color: #21242B;
         padding: 12px 14px;
         box-shadow: 0 2px 8px #00000022;
         border-radius: 8px;
         margin-bottom: 10px;
         font-size: 16px;
-        border-left: 4px solid #d4af37; /* Dourado como indicador */
+        border-left: 4px solid #d4af37;
     }
     .result-block.ok {
-        border-left: 4px solid #27d154; /* Verde elegante */
-        color: #1b3c24; /* Verde escuro */
+        border-left: 4px solid #27d154;
+        color: #1b3c24;
     }
     .result-block.none {
-        border-left: 4px solid #468cfb; /* Azul discreto */
-        background: #e8f1fc; /* Azul claro e leve */
-        color: #163a67; /* Azul escuro */
+        border-left: 4px solid #468cfb;
+        background: #e8f1fc;
+        color: #163a67;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# Exibe logo com as correções
 st.image("https://raw.githubusercontent.com/rvspericias/verificador-rvs-app/refs/heads/main/logo-min-flat.png", width=110)
 
 st.markdown("""
@@ -93,7 +101,6 @@ st.markdown("""
 <p>Automatize a conferência de jornadas com base nos arquivos PDF de contagem</p>
 """, unsafe_allow_html=True)
 
-# Função/conversões
 MESES_PT = {
     1: 'JANEIRO', 2: 'FEVEREIRO', 3: 'MARÇO', 4: 'ABRIL',
     5: 'MAIO', 6: 'JUNHO', 7: 'JULHO', 8: 'AGOSTO',
@@ -103,7 +110,6 @@ MESES_PT = {
 limite = st.number_input("Limite máximo de horas por dia (ex: 17.00)", min_value=0.0, max_value=24.0, value=17.00, step=0.25, format="%0.2f")
 verificar_identicos = st.checkbox("Verificar registros de entrada/saída idênticos", value=True)
 
-# Upload
 with st.container():
     st.markdown("<h4>📎 Upload do Arquivo</h4><p>Envie o PDF abaixo para realizar a verificação.</p>", unsafe_allow_html=True)
     uploaded_file = st.file_uploader("Envie o PDF da contagem de horas", type=["pdf"])
@@ -145,7 +151,22 @@ if uploaded_file:
                             if entrada == saida:
                                 registros_iguais.append((linha[:10], f"{entrada} - {saida}", mes_ref, i+1))
 
-    st.markdown("---")
+    # --- Bloco da mira SVG ---
+    st.markdown("""
+    <div class="sniper-wrap">
+      <svg class="sniper-svg" viewBox="0 0 64 64" fill="none">
+        <circle cx="32" cy="32" r="31" stroke="#d4af37" stroke-width="2.2"/>
+        <circle cx="32" cy="32" r="19" stroke="#468cfb" stroke-width="2.2"/>
+        <circle cx="32" cy="32" r="6"  stroke="#27d154" stroke-width="2.2"/>
+        <line x1="32" y1="3" x2="32" y2="14" stroke="#e63d3d" stroke-width="2"/>
+        <line x1="32" y1="50" x2="32" y2="61" stroke="#2e3192" stroke-width="2"/>
+        <line x1="3" y1="32" x2="14" y2="32" stroke="#2e3192" stroke-width="2"/>
+        <line x1="50" y1="32" x2="61" y2="32" stroke="#27d154" stroke-width="2"/>
+        <circle cx="32" cy="32" r="2" fill="#21242B" stroke="#27d154" stroke-width="1.2"/>
+      </svg>
+    </div>
+    """, unsafe_allow_html=True)
+
     st.subheader("Resultado da Verificação")
 
     if dias_excedidos:
