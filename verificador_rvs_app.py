@@ -108,7 +108,7 @@ if uploaded_file:
         for d in dias_excedidos:
             st.markdown(f"""
             <div style='background:#fff8dc; padding:10px; border-left:5px solid #d4af37; margin-bottom:8px;'>
-                <strong>{d[0]}</strong> | {d[1]}h | {d[2]} | Página {d[3]}
+                <strong>{d[0]}</strong> | {d[1]} | {d[2]} | Página {d[3]}
             </div>
             """, unsafe_allow_html=True)
     else:
