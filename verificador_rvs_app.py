@@ -11,11 +11,10 @@ def identificar_formato(texto):
     return 'antigo'
 
 # Função para extrair dados no formato antigo (A.01)
-def processar_antigo(texto, limite):
+def processar_antigo(texto, limite, page_num):
     dias_excedidos = []
     registros_iguais = []
     linhas = texto.split('\n')
-    page_num = 1  # Inicializa o contador de páginas
     for linha in linhas:
         if re.match(r'^\d{2}/\d{2}/\d{2}', linha):
             data_str = linha[:8]
@@ -35,15 +34,13 @@ def processar_antigo(texto, limite):
             for entrada, saida in pares:
                 if entrada == saida:
                     registros_iguais.append((data_str, entrada))
-        page_num += 1  # Incrementa o número da página após processar uma página
     return dias_excedidos, registros_iguais
 
 # Função para extrair dados no formato novo
-def processar_novo(texto, limite):
+def processar_novo(texto, limite, page_num):
     dias_excedidos = []
     registros_iguais = []
     linhas = texto.split('\n')
-    page_num = 1  # Inicializa o contador de páginas
     for linha in linhas:
         if re.match(r'^\d{2}', linha):
             partes = linha.split()
@@ -60,7 +57,6 @@ def processar_novo(texto, limite):
             for entrada, saida in pares:
                 if entrada == saida:
                     registros_iguais.append((data_str, entrada))
-        page_num += 1  # Incrementa o número da página após processar uma página
     return dias_excedidos, registros_iguais
 
 # Código principal do Streamlit
@@ -139,16 +135,18 @@ uploaded_file = st.file_uploader("Envie o PDF da contagem", type=["pdf"])
 if uploaded_file:
     with pdfplumber.open(BytesIO(uploaded_file.read())) as pdf:
         texto = ""
+        page_num = 1  # Inicializa o contador de página
         for page in pdf.pages:
             texto += page.extract_text() or ""
+            page_num += 1  # Incrementa o número da página após processar uma página
 
         # Identificar formato
         formato = identificar_formato(texto)
         
         if formato == 'novo':
-            dias_excedidos, registros_iguais = processar_novo(texto, limite)
+            dias_excedidos, registros_iguais = processar_novo(texto, limite, page_num)
         else:
-            dias_excedidos, registros_iguais = processar_antigo(texto, limite)
+            dias_excedidos, registros_iguais = processar_antigo(texto, limite, page_num)
 
         st.markdown('<h2 class="result-header">Resultado da Verificação</h2>', unsafe_allow_html=True)
         
