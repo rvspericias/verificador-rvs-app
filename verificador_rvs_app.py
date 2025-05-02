@@ -171,7 +171,10 @@ if uploaded_file:
                 font-weight: bold;
                 color: gold;
                 text-align: center;
-                margin-top: 20px;
+                margin-top: 10px;
+            }
+            .result-block {
+            margin-top: 5px;  # Ajuste também outros margens, se necessário
             }
     </style>
 """, unsafe_allow_html=True)
