@@ -162,7 +162,7 @@ if uploaded_file:
                             if entrada == saida:
                                 registros_iguais.append((f"{data_str} {dia_semana}", f"{entrada} - {saida}", mes_ref, i+1))
 
-
+    # Exibir os resultados
     st.markdown('<div class="header-gold">Resultado da Verificação</div>', unsafe_allow_html=True)
 
     if dias_excedidos:
