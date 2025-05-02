@@ -141,7 +141,8 @@ if uploaded_file:
                             continue
                         
                         # Agora ajustamos a captura da coluna "TOTAL" corretamente
-                        valores = re.findall(r'\d+,\d+', linha)
+                        # Procurar pelo valor TOTAL na última parte da linha
+                        valores = re.findall(r'(\d+,\d+|\d+\.\d+)', linha)  # Aceita vírgula ou ponto como separador decimal
                         if valores:
                             total = float(valores[-1].replace(",", "."))  # Coluna "TOTAL"
                             
