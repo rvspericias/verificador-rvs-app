@@ -4,11 +4,16 @@ import re
 from io import BytesIO
 from datetime import datetime
 
-st.set_page_config(
-    page_title="Verificador RVS",
-    page_icon="https://raw.githubusercontent.com/carlosrvs/verificador-rvs-app/main/logo-min-flat.png",
-    layout="centered"
-)
+st.markdown("""
+<div style='display: flex; justify-content: center; margin-top: 32px; margin-bottom: 10px;'>
+  <img 
+    src='https://raw.githubusercontent.com/rvspericias/verificador-rvs-app/refs/heads/main/logo-min-flat.png' 
+    width='112'
+    style='filter: drop-shadow(0 8px 25px #FFD700BB) drop-shadow(0 0px 1.5px #FFF);'
+    alt='Logo RVS'
+  />
+</div>
+""", unsafe_allow_html=True)
 
 st.markdown("""
 <style>
