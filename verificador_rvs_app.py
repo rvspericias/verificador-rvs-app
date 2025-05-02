@@ -77,7 +77,7 @@ st.markdown("""
         box-shadow: 0 2px 8px #00000022;
         border-radius: 8px;
         margin-bottom: 10px;
-        font-size: 16px;
+        font-size: 12px;
         border-left: 8px solid #d4af37;
     }
     .result-block.ok {
