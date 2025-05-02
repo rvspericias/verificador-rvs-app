@@ -3,7 +3,6 @@ import pdfplumber
 import re
 from io import BytesIO
 from datetime import datetime
-import calendar
 
 st.set_page_config(
     page_title="Verificador RVS",
@@ -13,30 +12,82 @@ st.set_page_config(
 
 st.markdown("""
 <style>
-    /* ... (todo o CSS igual ao anterior, pode colar por cima) ... */
-    .header-gold {
-        color: #d4af37 !important;
-        font-weight: 700;
-        font-size: 1.5rem;
-        margin-top: 1.5em;
-        margin-bottom: 1em;
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+    body, [class*="css"], .stApp {
+        font-family: 'Roboto', sans-serif !important;
+        background-color: #21242B !important;
+        color: #f5f5f5 !important;
     }
+    /* Logo sem bordas arredondadas */
+    img[src*="logo-min-flat.png"] {
+        border-radius: 0 !important;
+    }
+    .stButton>button {
+        background-color: #d4af37;
+        color: #21242B;
+        font-weight: 700;
+        border: none;
+        padding: 0.6em 1.2em;
+        border-radius: 10px;
+        font-size: 19px;
+        box-shadow: 0 2px 10px #0003;
+    }
+    .stButton>button:hover {
+        background-color: #edc84c;
+    }
+    /* Checkbox com check VERDE */
+    section[data-testid="stCheckbox"] svg {
+        stroke: #27d154 !important; /* Deixe #27d154 para verde forte, ou troque por #4b9df9 para azul */
+        fill: #27d154 !important; /* Troque por #4b9df9 para azul */
+        /* Para azul descomente a linha abaixo e comente as linhas acima */
+        /* stroke: #4b9df9 !important; fill: #4b9df9 !important; */
+        filter: drop-shadow(0 0 3px #27d15488); /* Opcional: glow ao redor do check */
+    }
+    section[data-testid="stCheckbox"]:hover svg {
+        stroke: #39ef74 !important; /* Ou #3ba1fa para azul-claro no hover */
+        fill: #39ef74 !important;   /* Ou #3ba1fa para azul-claro no hover */
+    }
+    .stMarkdown h1 {
+        color: #fafafa !important;
+        font-size: 2.5rem;
+        font-weight: 800;
+    }
+    .stMarkdown h2, h4 {
+        color: #e4e4e4 !important;
+        font-size: 1.3rem;
+        font-weight: 700;
+    }
+    .stMarkdown p, label {
+        color: #c7c7c7 !important;
+        font-size: 17px;
+    }
+    /* Mira SVG ao topo dos resultados */
+    .sniper-wrap {
+        width:100%%; display:flex; justify-content: center; margin-bottom: 14px;
+    }
+    .sniper-svg {
+        width: 62px; height: 62px; display: block;
+        filter: drop-shadow(0 2px 7px #224a85a0);
+    }
+
+    /* Resultados: Estilo clean com fundo claro */
     .result-block {
         background: #f7f7f8;
         color: #21242B;
         padding: 12px 14px;
-        box-shadow: 0 2px 8px #0003;
+        box-shadow: 0 2px 8px #00000022;
         border-radius: 8px;
         margin-bottom: 10px;
         font-size: 16px;
-        border-left: 6px solid #d4af37;
+        border-left: 4px solid #d4af37;
     }
     .result-block.ok {
-        border-left: 6px solid #27d154;
+        border-left: 4px solid #27d154;
         color: #1b3c24;
     }
     .result-block.none {
-        border-left: 6px solid #468cfb;
+        border-left: 4px solid #468cfb;
         background: #e8f1fc;
         color: #163a67;
     }
