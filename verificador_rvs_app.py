@@ -13,17 +13,6 @@ st.markdown("""
     alt='Logo RVS'
   />
 </div>
-""", unsafe_allow_html=True)
-
-st.markdown("""
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
-
-    html, body, [class*="css"] {
-        font-family: 'Poppins', sans-serif !important;
-        background-color: #000 !important;
-        color: #fff !important;
-    }
 
     /* Painel centralizado chumbo */
     .appview-container, .main, .block-container {
