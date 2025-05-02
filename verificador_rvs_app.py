@@ -3,10 +3,6 @@ import pdfplumber
 import re
 from io import BytesIO
 from datetime import datetime
-from locale import setlocale, LC_TIME
-
-# Define o idioma como português do Brasil
-setlocale(LC_TIME, 'pt_BR.utf8')
 
 st.set_page_config(
     page_title="Verificador RVS",
@@ -98,6 +94,13 @@ st.markdown("""
 
 ABR_DIAS_PT = ["SEG", "TER", "QUA", "QUI", "SEX", "SAB", "DOM"]
 
+# Tradução manual dos meses para português
+MESES_PT = {
+    "January": "JANEIRO", "February": "FEVEREIRO", "March": "MARÇO", "April": "ABRIL",
+    "May": "MAIO", "June": "JUNHO", "July": "JULHO", "August": "AGOSTO",
+    "September": "SETEMBRO", "October": "OUTUBRO", "November": "NOVEMBRO", "December": "DEZEMBRO"
+}
+
 def dia_da_semana(data_str):
     d = datetime.strptime(data_str, '%d/%m/%y')
     return ABR_DIAS_PT[d.weekday()]
@@ -146,10 +149,10 @@ if uploaded_file:
                             if entrada == saida:
                                 registros_iguais.append((f"{data_str} {dia_semana}", f"{entrada} - {saida}", ultima_data, i+1))
 
-    # Obtém o mês/ano com base na última data
-    mes_extenso = ultima_data.strftime('%B').capitalize() if ultima_data else 'Mês desconhecido'
+    # Obtém o mês/ano com base na última data, traduzido manualmente
+    mes_extenso = MESES_PT[ultima_data.strftime('%B')] if ultima_data else 'MÊS DESCONHECIDO'
     ano_ref = ultima_data.year if ultima_data else '---'
-    mes_referencia = f"{mes_extenso.upper()}/{ano_ref}"
+    mes_referencia = f"{mes_extenso}/{ano_ref}"
 
     # Título da Verificação
     st.markdown('<div class="header-gold">Resultado da Verificação</div>', unsafe_allow_html=True)
