@@ -11,7 +11,7 @@ st.set_page_config(
     layout="centered"
 )
 
-# Estilo CSS para ajustar a estética do layout
+# Estilo CSS
 st.markdown("""
 <style>
     body, [class*="css"], .stApp {
@@ -22,24 +22,35 @@ st.markdown("""
     .stButton>button {
         background-color: #d4af37;
         color: #21242B;
-        font-weight: 700 !important;
+        font-weight: bold;
         border-radius: 10px;
         font-size: 19px;
     }
-    /* Estilização das labels */
-    div[data-testid="stNumberInput"] > label,
-    div[data-testid="stFileUploader"] > label {
-        color: #d4af37 !important;
-        font-weight: bold !important;
-        font-size: 1.1rem !important;
-        text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
+    /* Blocos de Resultados */
+    .result-box {
+        padding: 10px 18px;
+        border-radius: 12px;
+        margin-bottom: 10px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        font-size: 15px;
+        line-height: 1.4;
     }
-    /* Checkbox Label (específico para o span do texto) */
-    div[data-testid="stCheckbox"] > label > div[data-testid="stMarkdownContainer"] > span {
-        color: #d4af37 !important;
-        font-weight: bold !important;
-        font-size: 1.1rem !important;
-        text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
+    .exceeded {
+        background: #fff8dc;
+        color: #333333;
+        border-left: 8px solid #d4af37;
+    }
+    .identical {
+        background: #eaf4ff;
+        color: #163a67;
+        border-left: 8px solid #468cfb;
+    }
+    /* Estilo dos subtítulos */
+    .subtitle {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #d4af37;
+        margin-top: 1.2em;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -51,17 +62,16 @@ st.markdown("""
 <p>Automatize a conferência de jornadas com base nos arquivos PDF de contagem.</p>
 """, unsafe_allow_html=True)
 
-# Widgets: inputs e uploads
+# Inputs
 limite = st.number_input("Limite máximo de horas por dia (ex: 17.00)", min_value=0.0, max_value=24.0, value=17.00, step=0.25)
-verificar_identicos = st.checkbox("Verificar registros de entrada/saída idênticos")
 uploaded_file = st.file_uploader("Envie o PDF da contagem", type=["pdf"])
 
-# Condicional para processar o upload
+# Processamento do arquivo PDF
 if uploaded_file:
     dias_excedidos = []
     registros_iguais = []
+    ultima_data = None
 
-    # Processar o PDF
     with pdfplumber.open(BytesIO(uploaded_file.read())) as pdf:
         for page in pdf.pages:
             texto = page.extract_text() or ""
@@ -73,29 +83,45 @@ if uploaded_file:
                     if len(horarios) < 2:
                         continue
                     valores = re.findall(r'\d+,\d+', linha)
+                    
+                    # Verificar limite excedido
                     a01 = float(valores[0].replace(",", ".")) if valores else 0
                     if a01 > limite:
                         dias_excedidos.append((data_str, a01))
 
-                    if verificar_identicos:
-                        pares = list(zip(horarios[::2], horarios[1::2]))
-                        for entrada, saida in pares:
-                            if entrada == saida:
-                                registros_iguais.append((data_str, f"{entrada} - {saida}"))
+                    # Verificar registros idênticos
+                    pares = list(zip(horarios[::2], horarios[1::2]))
+                    for entrada, saida in pares:
+                        if entrada == saida:
+                            registros_iguais.append((data_str, f"{entrada} - {saida}"))
 
-    # Resultado da verificação
-    st.markdown('<h2 style="color: #d4af37;">Resultado da Verificação</h2>', unsafe_allow_html=True)
-    st.markdown("### Dias com mais horas que o limite:")
+    # Resultado
+    st.markdown('<h2 class="subtitle">Resultado da Verificação</h2>', unsafe_allow_html=True)
+
+    # Dias que excedem o limite
+    st.markdown('<h3 class="subtitle">Dias com mais horas que o limite:</h3>', unsafe_allow_html=True)
     if dias_excedidos:
         for d in dias_excedidos:
-            st.write(f"**{d[0]}** — {d[1]} horas")
+            st.markdown(
+                f"<div class='result-box exceeded'><strong>{d[0]}</strong> — {d[1]:.2f} horas</div>",
+                unsafe_allow_html=True
+            )
     else:
-        st.write("Nenhum dia excedeu o limite.")
+        st.markdown(
+            "<div class='result-box exceeded'>Nenhum dia excedeu o limite de horas.</div>",
+            unsafe_allow_html=True
+        )
 
-    if verificar_identicos:
-        st.markdown("### Registros de entrada/saída idênticos:")
-        if registros_iguais:
-            for r in registros_iguais:
-                st.write(f"**{r[0]}** — {r[1]}")
-        else:
-            st.write("Nenhum registro idêntico encontrado.")
+    # Registros idênticos de entrada/saída
+    st.markdown('<h3 class="subtitle">Registros de entrada/saída idênticos:</h3>', unsafe_allow_html=True)
+    if registros_iguais:
+        for r in registros_iguais:
+            st.markdown(
+                f"<div class='result-box identical'><strong>{r[0]}</strong> — {r[1]}</div>",
+                unsafe_allow_html=True
+            )
+    else:
+        st.markdown(
+            "<div class='result-box identical'>Nenhum registro idêntico encontrado.</div>",
+            unsafe_allow_html=True
+        )
