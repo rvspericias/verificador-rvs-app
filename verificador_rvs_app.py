@@ -4,17 +4,7 @@ import re
 from io import BytesIO
 from datetime import datetime
 
-st.set_page_config(
-    page_title="Verificador RVS",
-    page_icon="https://raw.githubusercontent.com/carlosrvs/verificador-rvs-app/main/logo-min-flat.png",
-    layout="centered"
-)
-import streamlit as st
-import pdfplumber
-import re
-from io import BytesIO
-from datetime import datetime
-
+# === OBRIGATORIAMENTE A PRIMEIRA CHAMADA STREAMLIT ===
 st.set_page_config(
     page_title="Verificador RVS",
     page_icon="https://raw.githubusercontent.com/carlosrvs/verificador-rvs-app/main/logo-min-flat.png",
@@ -86,7 +76,7 @@ st.markdown("""
         margin-bottom: 0.8em;
     }
 
-    /* ====== ESTILIZAÇÃO DOS LABELS DOS WIDGETS ====== */
+    /* =========== AJUSTE FINAL: LABELS DOS WIDGETS =========== */
     /* st.number_input */
     div[data-testid="stNumberInput"] > label {
         color: #d4af37 !important; 
@@ -105,7 +95,7 @@ st.markdown("""
         text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
         margin-bottom: 6px !important;
     }
-    /* st.checkbox (ajuste correto para o texto da label!) */
+    /* st.checkbox - label real */
     div[data-testid="stCheckbox"] > label > div[data-testid="stMarkdownContainer"] > span {
         color: #d4af37 !important;
         font-weight: 700 !important;
@@ -113,7 +103,7 @@ st.markdown("""
         letter-spacing: 0.02em;
         text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
     }
-    /* ====== FIM DOS AJUSTES ====== */
+    /* =========== FIM DO AJUSTE =========== */
 </style>
 """, unsafe_allow_html=True)
 
