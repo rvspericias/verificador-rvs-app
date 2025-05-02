@@ -10,7 +10,7 @@ def identificar_formato(texto):
         return 'novo'
     return 'antigo'
 
-# Função para extrair dados no formato antigo
+# Função para extrair dados no formato antigo (A.01)
 def processar_antigo(texto, limite):
     dias_excedidos = []
     registros_iguais = []
@@ -24,7 +24,12 @@ def processar_antigo(texto, limite):
             valores = re.findall(r'\d+,\d+', linha)
             a01 = float(valores[0].replace(",", ".")) if valores else 0
             if a01 > limite:
-                dias_excedidos.append((data_str, a01))
+                try:
+                    dt_object = datetime.strptime(data_str, "%d/%m/%y")
+                    dia_semana = ["SEG", "TER", "QUA", "QUI", "SEX", "SAB", "DOM"][dt_object.weekday()]
+                    dias_excedidos.append((data_str, a01, dia_semana, dt_object.year, page_num))
+                except ValueError:
+                    continue
             pares = list(zip(horarios[::2], horarios[1::2]))
             for entrada, saida in pares:
                 if entrada == saida:
@@ -146,8 +151,8 @@ if uploaded_file:
         # Exibir resultados para dias excedidos
         st.markdown('<h3 class="subtitle">Dias com mais horas que o limite:</h3>', unsafe_allow_html=True)
         if dias_excedidos:
-            for data, horas in dias_excedidos:
-                st.markdown(f"<div class='result-box exceeded'><strong>{data}</strong> | {horas:.2f} horas</div>", unsafe_allow_html=True)
+            for data, horas, dia_semana, ano, pagina in dias_excedidos:
+                st.markdown(f"<div class='result-box exceeded'><strong>{data}</strong> | {horas:.2f} horas | {dia_semana} | {pagina} do PDF</div>", unsafe_allow_html=True)
         else:
             st.markdown("<div class='result-box exceeded'>Nenhum dia excedeu o limite de horas.</div>", unsafe_allow_html=True)
 
