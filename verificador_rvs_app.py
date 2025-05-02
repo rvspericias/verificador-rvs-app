@@ -36,16 +36,20 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-st.image("https://raw.githubusercontent.com/rvspericias/verificador-rvs-app/refs/heads/main/logo-min-flat.png", width=100)
+st.image("https://raw.githubusercontent.com/carlosrvs/verificador-rvs-app/main/logo-min-flat.png", width=100)
 
 st.markdown("""
 <h1 style='font-family: Roboto; font-size: 42px; color: #222; margin-bottom: 0;'>Verificador <span style='color:#d4af37;'>RVS</span></h1>
 <p style='font-family: Roboto; font-size: 18px; color: #555; margin-top: 0;'>Automatize a conferência de jornadas com base nos arquivos PDF de contagem</p>
 """, unsafe_allow_html=True)
 
+# Limite de horas
 limite = st.number_input("Limite máximo de horas por dia (ex: 17.00)", min_value=0.0, max_value=24.0, value=17.00, step=0.25, format="%0.2f")
+
+# Verificação de registros idênticos
 verificar_identicos = st.checkbox("Verificar registros de entrada/saída idênticos", value=True)
 
+# Upload do arquivo PDF com espaçamento e container
 with st.container():
     st.markdown("""
     <h4 style='font-family: Roboto; color: #444;'>📎 Upload do Arquivo</h4>
@@ -62,9 +66,10 @@ if uploaded_file:
             texto = page.extract_text()
             if not texto:
                 continue
+
             linhas = texto.split('\n')
-            mes_ref = next((re.search(r'(JANEIRO|FEVEREIRO|MARÇO|ABRIL|MAIO|JUNHO|JULHO|AGOSTO|SETEMBRO|OUTUBRO|NOVEMBRO|DEZEMBRO)/\d{4}', l) 
-                for l in linhas), None)
+            mes_ref = next((re.search(r'(JANEIRO|FEVEREIRO|MARÇO|ABRIL|MAIO|JUNHO|JULHO|AGOSTO|SETEMBRO|OUTUBRO|NOVEMBRO|DEZEMBRO)/\d{4}', l)
+                            for l in linhas if re.search(r'\d{4}', l)), None)
             mes_ref = mes_ref.group(0) if mes_ref else "Mês Desconhecido"
 
             for linha in linhas:
@@ -90,7 +95,9 @@ if uploaded_file:
     st.subheader("Resultado da Verificação")
 
     if dias_excedidos:
-        st.write("### Dias com mais horas que o limite:")
+        st.markdown("""
+        <h4 style='font-family: Roboto; color: #222;'>Dias com mais horas que o limite:</h4>
+        """, unsafe_allow_html=True)
         for d in dias_excedidos:
             st.markdown(f"""
             <div style='background:#fff8dc; padding:10px; border-left:5px solid #d4af37; margin-bottom:8px;'>
@@ -98,11 +105,17 @@ if uploaded_file:
             </div>
             """, unsafe_allow_html=True)
     else:
-        st.success("Nenhum dia excedeu o limite de horas.")
+        st.markdown("""
+        <div style='background:#e6f4ea; padding:10px; border-left:5px solid #2e7d32; margin-bottom:8px;'>
+            <strong>Nenhum dia excedeu o limite de horas.</strong>
+        </div>
+        """, unsafe_allow_html=True)
 
     if verificar_identicos:
         if registros_iguais:
-            st.write("### Registros com entrada/saída idênticos:")
+            st.markdown("""
+            <h4 style='font-family: Roboto; color: #222;'>Registros com entrada/saída idênticos:</h4>
+            """, unsafe_allow_html=True)
             for r in registros_iguais:
                 st.markdown(f"""
                 <div style='background:#f8f9fa; padding:10px; border-left:5px solid #888; margin-bottom:8px;'>
@@ -110,4 +123,8 @@ if uploaded_file:
                 </div>
                 """, unsafe_allow_html=True)
         else:
-            st.info("Nenhum registro idêntico encontrado.")
+            st.markdown("""
+            <div style='background:#e3f2fd; padding:10px; border-left:5px solid #2196f3; margin-bottom:8px;'>
+                <strong>Nenhum registro idêntico encontrado.</strong>
+            </div>
+            """, unsafe_allow_html=True)
