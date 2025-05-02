@@ -161,18 +161,18 @@ if uploaded_file:
                             if entrada == saida:
                                 registros_iguais.append((f"{data_str} {dia_semana}", f"{entrada} - {saida}", mes_ref, i+1))
 
-    import streamlit as st
+            import streamlit as st
 
-# Defina o seu CSS personalizado
-st.markdown("""
-    <style>
-        .header-gold {
-            font-size: 24px;
-            font-weight: bold;
-            color: gold;
-            text-align: center;
-            margin-top: 20px;
-        }
+            # Defina o seu CSS personalizado
+            st.markdown("""
+                <style>
+                .header-gold {
+                font-size: 24px;
+                font-weight: bold;
+                color: gold;
+                text-align: center;
+                margin-top: 20px;
+            }
     </style>
 """, unsafe_allow_html=True)
 
