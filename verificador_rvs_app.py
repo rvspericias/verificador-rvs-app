@@ -1,4 +1,4 @@
- import streamlit as st
+import streamlit as st
 import pdfplumber
 import re
 from io import BytesIO
@@ -10,161 +10,148 @@ st.set_page_config(
     layout="centered"
 )
 
-st.markdown("""
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
+# CSS Global — usando st.write para evitar problemas de renderização
+st.write(
+    """
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
 
-    html, body, [class*="css"] {
-        font-family: 'Poppins', sans-serif !important;
-        background-color: #000 !important;
-        color: #fff !important;
-    }
+        html, body, [class*="css"] {
+            font-family: 'Poppins', sans-serif !important;
+            background-color: #000 !important;
+            color: #fff !important;
+        }
+        .appview-container, .main, .block-container {
+            background: none !important;
+        }
+        .main > div:first-child, .block-container {
+            background: #202228 !important;
+            border-radius: 20px !important;
+            box-shadow: 0 6px 60px 0 rgba(0,0,0,0.9), 0 1.5px 4px 0 #FFD70020;
+            padding: 3em 2em 2em 2em !important;
+            margin-top: 0.2em !important;
+            min-width: 350px !important;
+            max-width: 650px !important;
+        }
 
-    /* Painel centralizado chumbo */
-    .appview-container, .main, .block-container {
-        background: none !important;
-    }
-    .main > div:first-child, .block-container {
-        background: #202228 !important;
-        border-radius: 20px !important;
-        box-shadow: 0 6px 60px 0 rgba(0,0,0,0.9), 0 1.5px 4px 0 #FFD70020;
-        padding: 3em 2em 2em 2em !important;
-        margin-top: 0.2em !important;
-        min-width: 350px !important;
-        max-width: 650px !important;
-    }
+        .rvs-main-title, .rvs-section-title {
+            font-family: 'Poppins', sans-serif !important;
+            font-weight: 700 !important;
+            letter-spacing: 1px;
+        }
+        .rvs-main-title {
+            font-size: 2.2em;
+            color: #FFD700 !important;
+            text-shadow: 0 2px 12px #B7974C99, 0 1px 0 #fff;
+            margin-bottom: 16px;
+            margin-top: 10px;
+        }
+        .rvs-section-title {
+            font-size: 1.35em;
+            color: #fffbea !important;
+            text-shadow: 0 1.5px 8px #FFD700CC, 0 1.5px 0 #36330099;
+            margin-bottom: 10px;
+            margin-top: 32px;
+        }
+        .divider-gold {
+            width: 90px;
+            height: 3px;
+            border-radius: 2px;
+            margin: 0.8em 0 1.6em 0;
+            background: linear-gradient(90deg,#FFD700 45%,#B7974C 100%);
+            box-shadow: 0 0 10px #613d0680;
+        }
+        p, label, .stNumberInput label {
+            color: #bbb !important;
+            font-size: 17px !important;
+        }
+        .stNumberInput label {
+            font-weight: 500;
+        }
+        .stTextInput>div>div>input,
+        .stNumberInput>div>div>input {
+            background: #232323 !important;
+            border: 1.5px solid #FFD70080 !important;
+            color: #FFD700 !important;
+            border-radius: 10px !important;
+            font-size: 16px !important;
+        }
+        .stCheckbox>label > div:first-child {
+            background: #FFD700 !important;
+            border-color: #FFD700 !important;
+        }
+        .stFileUploader {
+            background: #181818 !important;
+            border-radius: 14px !important;
+            border: 1.5px solid #FFD70080 !important;
+            box-shadow: 0 0 14px 0 #FFD70033;
+            color: #FFD700 !important;
+            padding: 1.5em 1.25em !important;
+            margin-bottom: 1em;
+        }
+        .stFileUploader label, .stFileUploader span {
+            color: #fff !important;
+            font-size: 16px !important;
+        }
+        .stButton>button {
+            background: linear-gradient(90deg,#FFD700 40%,#B7974C 100%);
+            color: #202228 !important;
+            font-weight: 700 !important;
+            border: none;
+            padding: 0.5em 1.4em;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px #FFD70025;
+            font-size: 1em;
+            letter-spacing: 1px;
+            transition: all 0.25s;
+        }
+        .stButton>button:hover {
+            background: linear-gradient(90deg,#FFE066,#FFD700 80%);
+            color: #0e0e0e !important;
+            box-shadow: 0 0 16px #FFD70088;
+        }
+        .rvs-card {
+            background: linear-gradient(90deg,#232323 60%,#282511 100%);
+            border-left: 7px solid #FFD700;
+            color: #fff;
+            padding: 1em 0.9em;
+            margin-bottom: 12px;
+            border-radius: 10px;
+            font-size: 16px;
+            box-shadow: 0 1px 12px #FFD7000D;
+            display: flex;
+            align-items: center;
+        }
+        .rvs-card strong {
+            color: #FFD700;
+            font-weight: 700;
+        }
+        .rvs-card.ok {
+            background: #222;
+            border-left: 7px solid #149a57;
+            color: #bbf7c2;
+        }
+        .rvs-card.none {
+            background: #181818;
+            border-left: 7px solid #4285f4;
+            color: #e7f0fd;
+        }
+        .rvs-card.grey {
+            background: #212121;
+            border-left: 7px solid #888;
+            color: #ccc;
+        }
+        @media (max-width: 650px) {
+            .main > div:first-child, .block-container { padding: 1.2em !important; }
+            .rvs-main-title { font-size: 1.3em !important; }
+            .divider-gold { width: 60px; }
+        }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
-    /* Títulos destacados */
-    .rvs-main-title, .rvs-section-title {
-        font-family: 'Poppins', sans-serif !important;
-        font-weight: 700 !important;
-        letter-spacing: 1px;
-    }
-    .rvs-main-title {
-        font-size: 2.2em;
-        color: #FFD700 !important;
-        text-shadow: 0 2px 12px #B7974C99, 0 1px 0 #fff;
-        margin-bottom: 16px;
-        margin-top: 10px;
-    }
-    .rvs-section-title {
-        font-size: 1.35em;
-        color: #fffbea !important;
-        text-shadow: 0 1.5px 8px #FFD700CC, 0 1.5px 0 #36330099;
-        margin-bottom: 10px;
-        margin-top: 32px;
-    }
-
-    /* Linhas divisórias douradas */
-    .divider-gold {
-        width: 90px;
-        height: 3px;
-        border-radius: 2px;
-        margin: 0.8em 0 1.6em 0;
-        background: linear-gradient(90deg,#FFD700 45%,#B7974C 100%);
-        box-shadow: 0 0 10px #613d0680;
-    }
-
-    /* Subtítulo e descrições */
-    p, label, .stNumberInput label {
-        color: #bbb !important;
-        font-size: 17px !important;
-    }
-    .stNumberInput label {
-        font-weight: 500;
-    }
-
-    /* Inputs */
-    .stTextInput>div>div>input,
-    .stNumberInput>div>div>input {
-        background: #232323 !important;
-        border: 1.5px solid #FFD70080 !important;
-        color: #FFD700 !important;
-        border-radius: 10px !important;
-        font-size: 16px !important;
-    }
-    .stCheckbox>label > div:first-child {
-        background: #FFD700 !important;
-        border-color: #FFD700 !important;
-    }
-
-    /* Upload/Arraste */
-    .stFileUploader {
-        background: #181818 !important;
-        border-radius: 14px !important;
-        border: 1.5px solid #FFD70080 !important;
-        box-shadow: 0 0 14px 0 #FFD70033;
-        color: #FFD700 !important;
-        padding: 1.5em 1.25em !important;
-        margin-bottom: 1em;
-    }
-    .stFileUploader label, .stFileUploader span {
-        color: #fff !important;
-        font-size: 16px !important;
-    }
-
-    /* Botão dourado */
-    .stButton>button {
-        background: linear-gradient(90deg,#FFD700 40%,#B7974C 100%);
-        color: #202228 !important;
-        font-weight: 700 !important;
-        border: none;
-        padding: 0.5em 1.4em;
-        border-radius: 10px;
-        box-shadow: 0 2px 8px #FFD70025;
-        font-size: 1em;
-        letter-spacing: 1px;
-        transition: all 0.25s;
-    }
-    .stButton>button:hover {
-        background: linear-gradient(90deg,#FFE066,#FFD700 80%);
-        color: #0e0e0e !important;
-        box-shadow: 0 0 16px #FFD70088;
-    }
-
-    /* Cartões e avisos */
-    .rvs-card {
-        background: linear-gradient(90deg,#232323 60%,#282511 100%);
-        border-left: 7px solid #FFD700;
-        color: #fff;
-        padding: 1em 0.9em;
-        margin-bottom: 12px;
-        border-radius: 10px;
-        font-size: 16px;
-        box-shadow: 0 1px 12px #FFD7000D;
-        display: flex;
-        align-items: center;
-    }
-    .rvs-card strong {
-        color: #FFD700;
-        font-weight: 700;
-    }
-    .rvs-card.ok {
-        background: #222;
-        border-left: 7px solid #149a57;
-        color: #bbf7c2;
-    }
-    .rvs-card.none {
-        background: #181818;
-        border-left: 7px solid #4285f4;
-        color: #e7f0fd;
-    }
-    .rvs-card.grey {
-        background: #212121;
-        border-left: 7px solid #888;
-        color: #ccc;
-    }
-
-    /* Responsividade extra */
-    @media (max-width: 650px) {
-        .main > div:first-child, .block-container { padding: 1.2em !important; }
-        .rvs-main-title { font-size: 1.3em !important; }
-        .divider-gold { width: 60px; }
-    }
-</style>
-""", unsafe_allow_html=True)
-
-# ---- LOGO (apenas imagem com efeito glow, centralizada) ----
+# Logo centralizada, apenas glow dourado
 st.markdown("""
 <div style='display: flex; justify-content: center; margin-top: 32px; margin-bottom: 10px;'>
   <img 
@@ -176,7 +163,7 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ---- TÍTULO PRINCIPAL ----
+# Título principal e divisor
 st.markdown("<h1 class='rvs-main-title'>Verificador RVS</h1>", unsafe_allow_html=True)
 st.markdown("<div class='divider-gold'></div>", unsafe_allow_html=True)
 st.markdown(
