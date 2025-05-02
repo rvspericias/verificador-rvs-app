@@ -19,7 +19,6 @@ st.markdown("""
         background-color: #21242B !important;
         color: #f5f5f5 !important;
     }
-    /* Logo sem bordas arredondadas */
     img[src*="logo-min-flat.png"] {
         border-radius: 0 !important;
     }
@@ -36,7 +35,6 @@ st.markdown("""
     .stButton>button:hover {
         background-color: #edc84c;
     }
-    /* Checkbox com check VERDE */
     section[data-testid="stCheckbox"] svg {
         stroke: #27d154 !important;
         fill: #27d154 !important;
@@ -66,10 +64,8 @@ st.markdown("""
     }
     .sniper-svg {
         width: 62px; height: 62px; display: block;
-        filter: drop-shadow(0 2px 7px #224a85a0);
+        filter: drop-shadow(0 2px 7px #224a85a0;
     }
-
-    /* Resultados: Estilo clean com fundo claro */
     .result-block {
         background: #f7f7f8;
         color: #21242B;
@@ -89,7 +85,6 @@ st.markdown("""
         background: #e8f1fc;
         color: #163a67;
     }
-    /* Header dourado destacado */
     .header-gold {
         color: #d4af37 !important;
         font-weight: 900;
@@ -102,6 +97,14 @@ st.markdown("""
         line-height: 1.1;
         text-align: left;
     }
+    /* Subtítulo menor para avisos/descrições */
+    .subtitulo-minor {
+        font-size: 1.05rem !important;  /* Ajuste aqui o tamanho como quiser */
+        color: #313131 !important;
+        font-weight: 700;
+        margin-bottom: 0.6em;
+        margin-top: 1.6em;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -112,15 +115,12 @@ st.markdown("""
 <p>Automatize a conferência de jornadas com base nos arquivos PDF de contagem</p>
 """, unsafe_allow_html=True)
 
-# Abreviações dos dias da semana em PT-BR
 ABR_DIAS_PT = ["SEG", "TER", "QUA", "QUI", "SEX", "SAB", "DOM"]
 
-# Função correta para data + sigla do dia em PT-BR
 def dia_da_semana(data_str):
     d = datetime.strptime(data_str, '%d/%m/%y')
     return ABR_DIAS_PT[d.weekday()]
 
-# Dicionário de meses em português
 MESES_PT = {
     1: 'JANEIRO', 2: 'FEVEREIRO', 3: 'MARÇO', 4: 'ABRIL',
     5: 'MAIO', 6: 'JUNHO', 7: 'JULHO', 8: 'AGOSTO',
@@ -175,7 +175,7 @@ if uploaded_file:
     st.markdown('<div class="header-gold">Resultado da Verificação</div>', unsafe_allow_html=True)
 
     if dias_excedidos:
-        st.write("### Dias com mais horas que o limite:")
+        st.markdown('<p class="subtitulo-minor">Dias com mais horas que o limite:</p>', unsafe_allow_html=True)
         for d in dias_excedidos:
             st.markdown(
                 f"<div class='result-block'><strong>{d[0]}</strong> | {d[1]} | {d[2]} | Página {d[3]}</div>",
