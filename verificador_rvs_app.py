@@ -128,7 +128,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Logo e título
-st.image("https://raw.githubusercontent.com/rvspericias/verificador-rvs-app/refs/heads/main/logo-min-flat.png", width=110)
+st.image("logo-min-flat.png", width=110)
 st.markdown("""
 <h1 style='color: #ffffff;'>Verificador <span style="color: #d4af37;">RVS</span></h1>
 <p>Automatize a conferência de jornadas com base nos arquivos PDF de contagem.</p>
